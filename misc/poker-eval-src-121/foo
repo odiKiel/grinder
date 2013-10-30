@@ -1,0 +1,2841 @@
+? foo
+Index: Makefile.in
+===================================================================
+RCS file: /cvsroot/pokersource/poker-eval/Makefile.in,v
+retrieving revision 1.9
+diff -r1.9 Makefile.in
+4a5,6
+> ENABLE_JAVA := @ENABLE_JAVA@
+> 
+7d8
+< 	(cd java; $(MAKE))
+9a11,13
+> ifeq ($(ENABLE_JAVA), yes)
+> 	(cd java; $(MAKE))
+> endif
+13d16
+< 	(cd java; $(MAKE) $@)
+16a20
+> 	(cd java; $(MAKE) $@)
+19a24
+> ifeq ($(ENABLE_JAVA), yes)
+20a26
+> endif
+26a33,34
+> 	$(RM) -f Makefile lib/Makefile tests/Makefile examples/Makefile
+> 	$(RM) -f include/Makefile java/Makefile
+28c36
+< release:
+---
+> release-src:
+30,31c38,39
+< 	$(MAKE) clean cleanconfig javadoc jarfile cleanclass
+< 	$(MAKE) poker-eval-$(RELEASE_NUMBER).tar.gz
+---
+> 	$(MAKE) clean javadoc jarfile cleanclass
+> 	$(MAKE)	poker-eval-src-$(RELEASE_NUMBER).tar.gz
+33,34c41,42
+< poker-eval-$(RELEASE_NUMBER).tar.gz:
+< 	DIR=/tmp/rel$$$$/poker-eval-$(RELEASE_NUMBER);\
+---
+> poker-eval-src-$(RELEASE_NUMBER).tar.gz:
+> 	DIR=/tmp/rel$$$$/poker-eval-src-$(RELEASE_NUMBER);\
+36a45
+> 	rm -f $$DIR/config.log $$DIR/config.cache $$DIR/config.status;\
+40,41c49,50
+< 	find $$DIR -name 'poker-eval-*.tar.gz' | xargs rm -f;\
+< 	tar cvf - -C /tmp/rel$$$$ poker-eval-$(RELEASE_NUMBER) | gzip -c > $@;\
+---
+> 	find $$DIR -name 'poker-eval-src-*.tar.gz' | xargs rm -f;\
+> 	tar cvf - -C /tmp/rel$$$$ poker-eval-src-$(RELEASE_NUMBER) | gzip -c > $@;\
+Index: README
+===================================================================
+RCS file: /cvsroot/pokersource/poker-eval/README,v
+retrieving revision 1.5
+diff -r1.5 README
+0a1,5
+> $Id: README,v 1.6 2002/07/14 07:09:34 mjmaurer Exp $
+> 
+> Introduction
+> ============
+> 
+5d9
+< 
+10d13
+< 
+12,13c15,16
+< under the terms of the GNU General Public License.
+< 
+---
+> under the terms of the GNU General Public License.  See the LICENSE file
+> in the root directory of the distribution.
+15,17c18,22
+< In order to compile the Java portions of the package, you will need the
+< following packages.  You can simply download the jar file for each and add
+< them to your CLASSPATH:
+---
+> The PokerSource library includes an optional Java layer.  You can compile the
+> C library on its own, or you can compile both the C library and the Java
+> layer.  In order to compile the Java layer, you will need the following
+> packages.  Jar files are provided as part of the distribution for your
+> convenience; you can also download the sources or jar files yourself.
+19a25,27
+>         See the file LICENSE.oro for license details.  
+>         This product includes software developed by the
+>         Apache Software Foundation (http://www.apache.org/).
+22,24c30,31
+< If you aren't interested in the Java portions, you can compile the C
+< library on its own.  The Java code is documented in the java/javadoc/
+< directory.
+---
+>         See the file LICENSE.junit for license details.
+> The Java code is documented in the java/javadoc directory.
+26d32
+< Compiling -- Unix systems:
+27a34,35
+> Compiling -- Unix systems
+> =========================
+29,30c37,38
+< compiling on a Unix system should be fairly simple.  Just enter the
+< following commands: 
+---
+> compiling on a Unix system should be fairly simple.  If you want to
+> build both the C library and the java layer, say
+33a42,45
+> Or, if you do not want to build the java layer, say
+>   ./configure --disable-java
+>   make
+>   make test
+38c50
+< make; if this is the case, they may need to be edited before the
+---
+> make; if you do not have GNU make, they may need to be edited before the
+42,43d53
+< * add the lib directory to your LD_LIBRARY_PATH environment variable
+< * add the java/pokersource.jar file to your CLASSPATH environment variable
+44a55,58
+> * add the lib directory to your LD_LIBRARY_PATH environment variable
+> * add java/pokersource.jar to your CLASSPATH environment variable
+> * add java/jakarta-oro-2.0.6.jar to your CLASSPATH environment variable
+> * add java/junit-3.7.jar to your CLASSPATH environment variable
+46d59
+< Compiling -- Windows, using cygwin: 
+47a61,62
+> Compiling -- Windows, using cygwin 
+> ==================================
+55,61c70,77
+< Compiling -- DOS / Windows: 
+< 
+< The library can also be compiled using Microsoft Visual C++.  In each
+< directory, special DOS makefiles are provided, called makefile.dos.
+< To compile the library, make sure that the VC tools are on the path
+< and that the LIB variable is properly set (VC provides a batch file,
+< vcvars32.bat, to set this up), and enter the following commands:
+---
+> Compiling -- DOS / Windows
+> ==========================
+> The C portion of the library can also be compiled using Microsoft Visual
+> C++.  In each directory, special DOS makefiles are provided, called
+> makefile.dos.  To compile the library, make sure that the VC tools are
+> on the path and that the LIB variable is properly set (VC provides a
+> batch file, vcvars32.bat, to set this up), and enter the following
+> commands:
+68a85,86
+> The Java layer is not supported yet.
+> 
+82,83c100,101
+< Reporting bugs, suggesting improvements: 
+< 
+---
+> Reporting bugs, suggesting improvements
+> =======================================
+87a106,107
+> You can also check out the pokersource user group at
+> http://groups.yahoo.com/group/pokersource.
+Index: RELEASE
+===================================================================
+RCS file: /cvsroot/pokersource/poker-eval/RELEASE,v
+retrieving revision 1.2
+diff -r1.2 RELEASE
+0a1,6
+> poker-eval-121 (19 Sep 2002)
+> ============================
+> Now the configure script allows you to turn off building the Java layer.
+> Fixed omissions in the makefile.dos files.
+> 
+> 
+Index: configure
+===================================================================
+RCS file: /cvsroot/pokersource/poker-eval/configure,v
+retrieving revision 1.13
+diff -r1.13 configure
+538c538,539
+<   SLIB_CMD="?????? need command to create DLL here"
+---
+>   SLIB_CMD="LINK /DLL /OUT:\$@ \$**"
+>   SLIBJNI_CMD="LINK /DLL /OUT:\$@ ..\\lib\\libpoker.dll \$**"
+590c591
+< echo "configure:591: checking host system type" >&5
+---
+> echo "configure:592: checking host system type" >&5
+611c612
+< echo "configure:612: checking target system type" >&5
+---
+> echo "configure:613: checking target system type" >&5
+629c630
+< echo "configure:630: checking build system type" >&5
+---
+> echo "configure:631: checking build system type" >&5
+655c656
+< echo "configure:656: checking for $ac_word" >&5
+---
+> echo "configure:657: checking for $ac_word" >&5
+685c686
+< echo "configure:686: checking for $ac_word" >&5
+---
+> echo "configure:687: checking for $ac_word" >&5
+715c716
+< echo "configure:716: checking for $ac_word" >&5
+---
+> echo "configure:717: checking for $ac_word" >&5
+766c767
+< echo "configure:767: checking for $ac_word" >&5
+---
+> echo "configure:768: checking for $ac_word" >&5
+798c799
+< echo "configure:799: checking whether the C compiler ($CC $CFLAGS $LDFLAGS) works" >&5
+---
+> echo "configure:800: checking whether the C compiler ($CC $CFLAGS $LDFLAGS) works" >&5
+809c810
+< #line 810 "configure"
+---
+> #line 811 "configure"
+814c815
+< if { (eval echo configure:815: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+---
+> if { (eval echo configure:816: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+840c841
+< echo "configure:841: checking whether the C compiler ($CC $CFLAGS $LDFLAGS) is a cross-compiler" >&5
+---
+> echo "configure:842: checking whether the C compiler ($CC $CFLAGS $LDFLAGS) is a cross-compiler" >&5
+845c846
+< echo "configure:846: checking whether we are using GNU C" >&5
+---
+> echo "configure:847: checking whether we are using GNU C" >&5
+854c855
+< if { ac_try='${CC-cc} -E conftest.c'; { (eval echo configure:855: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } | egrep yes >/dev/null 2>&1; then
+---
+> if { ac_try='${CC-cc} -E conftest.c'; { (eval echo configure:856: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } | egrep yes >/dev/null 2>&1; then
+873c874
+< echo "configure:874: checking whether ${CC-cc} accepts -g" >&5
+---
+> echo "configure:875: checking whether ${CC-cc} accepts -g" >&5
+905,909c906,910
+<     
+< if test "x$CLASSPATH" = x; then
+<         echo "You have no CLASSPATH, I hope it is good"
+< else
+<         echo "You have CLASSPATH $CLASSPATH, hope it is correct"
+---
+>     echo $ac_n "checking how to run the C preprocessor""... $ac_c" 1>&6
+> echo "configure:908: checking how to run the C preprocessor" >&5
+> # On Suns, sometimes $CPP names a directory.
+> if test -n "$CPP" && test -d "$CPP"; then
+>   CPP=
+911,914c912,913
+< 
+<   echo $ac_n "checking for Cygwin environment""... $ac_c" 1>&6
+< echo "configure:914: checking for Cygwin environment" >&5
+< if eval "test \"`echo '$''{'ac_cv_cygwin'+set}'`\" = set"; then
+---
+> if test -z "$CPP"; then
+> if eval "test \"`echo '$''{'ac_cv_prog_CPP'+set}'`\" = set"; then
+916a916,920
+>     # This must be in double quotes, not single quotes, because CPP may get
+>   # substituted into the Makefile and "${CC-cc}" will confuse make.
+>   CPP="${CC-cc} -E"
+>   # On the NeXT, cc -E runs the code through the compiler's parser,
+>   # not just through cpp.
+918c922
+< #line 919 "configure"
+---
+> #line 923 "configure"
+920,927c924,942
+< 
+< int main() {
+< 
+< #ifndef __CYGWIN__
+< #define __CYGWIN__ __CYGWIN32__
+< #endif
+< return __CYGWIN__;
+< ; return 0; }
+---
+> #include <assert.h>
+> Syntax Error
+> EOF
+> ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
+> { (eval echo configure:929: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+> ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
+> if test -z "$ac_err"; then
+>   :
+> else
+>   echo "$ac_err" >&5
+>   echo "configure: failed program was:" >&5
+>   cat conftest.$ac_ext >&5
+>   rm -rf conftest*
+>   CPP="${CC-cc} -E -traditional-cpp"
+>   cat > conftest.$ac_ext <<EOF
+> #line 940 "configure"
+> #include "confdefs.h"
+> #include <assert.h>
+> Syntax Error
+929c944,952
+< if { (eval echo configure:930: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+---
+> ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
+> { (eval echo configure:946: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+> ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
+> if test -z "$ac_err"; then
+>   :
+> else
+>   echo "$ac_err" >&5
+>   echo "configure: failed program was:" >&5
+>   cat conftest.$ac_ext >&5
+931c954,965
+<   ac_cv_cygwin=yes
+---
+>   CPP="${CC-cc} -nologo -E"
+>   cat > conftest.$ac_ext <<EOF
+> #line 957 "configure"
+> #include "confdefs.h"
+> #include <assert.h>
+> Syntax Error
+> EOF
+> ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
+> { (eval echo configure:963: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+> ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
+> if test -z "$ac_err"; then
+>   :
+932a967
+>   echo "$ac_err" >&5
+936c971,973
+<   ac_cv_cygwin=no
+---
+>   CPP=/lib/cpp
+> fi
+> rm -f conftest*
+938a976
+> fi
+939a978,982
+>   ac_cv_prog_CPP="$CPP"
+> fi
+>   CPP="$ac_cv_prog_CPP"
+> else
+>   ac_cv_prog_CPP="$CPP"
+940a984
+> echo "$ac_t""$CPP" 1>&6
+942,947c986,988
+< echo "$ac_t""$ac_cv_cygwin" 1>&6
+< CYGWIN=
+< test "$ac_cv_cygwin" = yes && CYGWIN=yes
+< echo $ac_n "checking for mingw32 environment""... $ac_c" 1>&6
+< echo "configure:947: checking for mingw32 environment" >&5
+< if eval "test \"`echo '$''{'ac_cv_mingw32'+set}'`\" = set"; then
+---
+> echo $ac_n "checking for ANSI C header files""... $ac_c" 1>&6
+> echo "configure:988: checking for ANSI C header files" >&5
+> if eval "test \"`echo '$''{'ac_cv_header_stdc'+set}'`\" = set"; then
+951c992
+< #line 952 "configure"
+---
+> #line 993 "configure"
+953,956c994,997
+< 
+< int main() {
+< return __MINGW32__;
+< ; return 0; }
+---
+> #include <stdlib.h>
+> #include <stdarg.h>
+> #include <string.h>
+> #include <float.h>
+958c999,1002
+< if { (eval echo configure:959: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+---
+> ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
+> { (eval echo configure:1001: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+> ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
+> if test -z "$ac_err"; then
+960c1004
+<   ac_cv_mingw32=yes
+---
+>   ac_cv_header_stdc=yes
+961a1006
+>   echo "$ac_err" >&5
+965c1010
+<   ac_cv_mingw32=no
+---
+>   ac_cv_header_stdc=no
+968,974d1012
+< rm -f conftest*
+< fi
+< 
+< echo "$ac_t""$ac_cv_mingw32" 1>&6
+< MINGW32=
+< test "$ac_cv_mingw32" = yes && MINGW32=yes
+< 
+976,982c1014,1023
+< echo $ac_n "checking for executable suffix""... $ac_c" 1>&6
+< echo "configure:978: checking for executable suffix" >&5
+< if eval "test \"`echo '$''{'ac_cv_exeext'+set}'`\" = set"; then
+<   echo $ac_n "(cached) $ac_c" 1>&6
+< else
+<   if test "$CYGWIN" = yes || test "$MINGW32" = yes; then
+<   ac_cv_exeext=.exe
+---
+> if test $ac_cv_header_stdc = yes; then
+>   # SunOS 4.x string.h does not declare mem*, contrary to ANSI.
+> cat > conftest.$ac_ext <<EOF
+> #line 1018 "configure"
+> #include "confdefs.h"
+> #include <string.h>
+> EOF
+> if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+>   egrep "memchr" >/dev/null 2>&1; then
+>   :
+984,999c1025,1026
+<   rm -f conftest*
+<   echo 'int main () { return 0; }' > conftest.$ac_ext
+<   ac_cv_exeext=
+<   if { (eval echo configure:988: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; }; then
+<     for file in conftest.*; do
+<       case $file in
+<       *.c | *.o | *.obj) ;;
+<       *) ac_cv_exeext=`echo $file | sed -e s/conftest//` ;;
+<       esac
+<     done
+<   else
+<     { echo "configure: error: installation or configuration problem: compiler cannot create executables." 1>&2; exit 1; }
+<   fi
+<   rm -f conftest*
+<   test x"${ac_cv_exeext}" = x && ac_cv_exeext=no
+< fi
+---
+>   rm -rf conftest*
+>   ac_cv_header_stdc=no
+1000a1028
+> rm -f conftest*
+1002,1031d1029
+< EXEEXT=""
+< test x"${ac_cv_exeext}" != xno && EXEEXT=${ac_cv_exeext}
+< echo "$ac_t""${ac_cv_exeext}" 1>&6
+< ac_exeext=$EXEEXT
+< 
+< 
+< if test "x$JAVAPREFIX" = x; then
+< 	test "x$JAVAC" = x && for ac_prog in "gcj$EXEEXT -C" guavac$EXEEXT jikes$EXEEXT javac$EXEEXT
+< do
+< # Extract the first word of "$ac_prog", so it can be a program name with args.
+< set dummy $ac_prog; ac_word=$2
+< echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
+< echo "configure:1015: checking for $ac_word" >&5
+< if eval "test \"`echo '$''{'ac_cv_prog_JAVAC'+set}'`\" = set"; then
+<   echo $ac_n "(cached) $ac_c" 1>&6
+< else
+<   if test -n "$JAVAC"; then
+<   ac_cv_prog_JAVAC="$JAVAC" # Let the user override the test.
+< else
+<   IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
+<   ac_dummy="$PATH"
+<   for ac_dir in $ac_dummy; do
+<     test -z "$ac_dir" && ac_dir=.
+<     if test -f $ac_dir/$ac_word; then
+<       ac_cv_prog_JAVAC="$ac_prog"
+<       break
+<     fi
+<   done
+<   IFS="$ac_save_ifs"
+< fi
+1033,1035c1031,1041
+< JAVAC="$ac_cv_prog_JAVAC"
+< if test -n "$JAVAC"; then
+<   echo "$ac_t""$JAVAC" 1>&6
+---
+> 
+> if test $ac_cv_header_stdc = yes; then
+>   # ISC 2.0.2 stdlib.h does not declare free, contrary to ANSI.
+> cat > conftest.$ac_ext <<EOF
+> #line 1036 "configure"
+> #include "confdefs.h"
+> #include <stdlib.h>
+> EOF
+> if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+>   egrep "free" >/dev/null 2>&1; then
+>   :
+1037c1043,1044
+<   echo "$ac_t""no" 1>&6
+---
+>   rm -rf conftest*
+>   ac_cv_header_stdc=no
+1038a1046
+> rm -f conftest*
+1040,1041c1048
+< test -n "$JAVAC" && break
+< done
+---
+> fi
+1042a1050,1053
+> if test $ac_cv_header_stdc = yes; then
+>   # /bin/cc in Irix-4.0.5 gets non-ANSI ctype macros unless using -ansi.
+> if test "$cross_compiling" = yes; then
+>   :
+1044,1054c1055,1069
+< 	test "x$JAVAC" = x && for ac_prog in "gcj$EXEEXT -C" guavac$EXEEXT jikes$EXEEXT javac$EXEEXT
+< do
+< # Extract the first word of "$ac_prog", so it can be a program name with args.
+< set dummy $ac_prog; ac_word=$2
+< echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
+< echo "configure:1050: checking for $ac_word" >&5
+< if eval "test \"`echo '$''{'ac_cv_prog_JAVAC'+set}'`\" = set"; then
+<   echo $ac_n "(cached) $ac_c" 1>&6
+< else
+<   if test -n "$JAVAC"; then
+<   ac_cv_prog_JAVAC="$JAVAC" # Let the user override the test.
+---
+>   cat > conftest.$ac_ext <<EOF
+> #line 1057 "configure"
+> #include "confdefs.h"
+> #include <ctype.h>
+> #define ISLOWER(c) ('a' <= (c) && (c) <= 'z')
+> #define TOUPPER(c) (ISLOWER(c) ? 'A' + ((c) - 'a') : (c))
+> #define XOR(e, f) (((e) && !(f)) || (!(e) && (f)))
+> int main () { int i; for (i = 0; i < 256; i++)
+> if (XOR (islower (i), ISLOWER (i)) || toupper (i) != TOUPPER (i)) exit(2);
+> exit (0); }
+> 
+> EOF
+> if { (eval echo configure:1068: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+> then
+>   :
+1056,1065c1071,1074
+<   IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
+<   ac_dummy="$PATH"
+<   for ac_dir in $ac_dummy; do
+<     test -z "$ac_dir" && ac_dir=.
+<     if test -f $ac_dir/$ac_word; then
+<       ac_cv_prog_JAVAC="$ac_prog"
+<       break
+<     fi
+<   done
+<   IFS="$ac_save_ifs"
+---
+>   echo "configure: failed program was:" >&5
+>   cat conftest.$ac_ext >&5
+>   rm -fr conftest*
+>   ac_cv_header_stdc=no
+1066a1076,1078
+> rm -fr conftest*
+> fi
+> 
+1068,1072d1079
+< JAVAC="$ac_cv_prog_JAVAC"
+< if test -n "$JAVAC"; then
+<   echo "$ac_t""$JAVAC" 1>&6
+< else
+<   echo "$ac_t""no" 1>&6
+1075,1077c1082,1086
+< test -n "$JAVAC" && break
+< done
+< test -n "$JAVAC" || JAVAC="$JAVAPREFIX"
+---
+> echo "$ac_t""$ac_cv_header_stdc" 1>&6
+> if test $ac_cv_header_stdc = yes; then
+>   cat >> confdefs.h <<\EOF
+> #define STDC_HEADERS 1
+> EOF
+1080d1088
+< test "x$JAVAC" = x && { echo "configure: error: no acceptable Java compiler found in \$PATH" 1>&2; exit 1; }
+1082,1084c1090,1093
+< echo $ac_n "checking if $JAVAC works""... $ac_c" 1>&6
+< echo "configure:1084: checking if $JAVAC works" >&5
+< if eval "test \"`echo '$''{'ac_cv_prog_javac_works'+set}'`\" = set"; then
+---
+> 
+>     echo $ac_n "checking for working const""... $ac_c" 1>&6
+> echo "configure:1093: checking for working const" >&5
+> if eval "test \"`echo '$''{'ac_cv_c_const'+set}'`\" = set"; then
+1087,1317c1096,1098
+<   
+< JAVA_TEST=Test.java
+< CLASS_TEST=Test.class
+< cat << \EOF > $JAVA_TEST
+< /* #line 1092 "configure" */
+< public class Test {
+< }
+< EOF
+< if { ac_try='$JAVAC $JAVACFLAGS $JAVA_TEST'; { (eval echo configure:1096: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } >/dev/null 2>&1; then
+<   ac_cv_prog_javac_works=yes
+< else
+<   { echo "configure: error: The Java compiler $JAVAC failed (see config.log, check the CLASSPATH?)" 1>&2; exit 1; }
+<   echo "configure: failed program was:" >&5
+<   cat $JAVA_TEST >&5
+< fi
+< rm -f $JAVA_TEST $CLASS_TEST
+< 
+< fi
+< 
+< echo "$ac_t""$ac_cv_prog_javac_works" 1>&6
+< 
+< 
+<   
+< if test x$JAVAPREFIX = x; then
+< 	test x$JAVA = x && for ac_prog in kaffe$EXEEXT java$EXEEXT
+< do
+< # Extract the first word of "$ac_prog", so it can be a program name with args.
+< set dummy $ac_prog; ac_word=$2
+< echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
+< echo "configure:1117: checking for $ac_word" >&5
+< if eval "test \"`echo '$''{'ac_cv_prog_JAVA'+set}'`\" = set"; then
+<   echo $ac_n "(cached) $ac_c" 1>&6
+< else
+<   if test -n "$JAVA"; then
+<   ac_cv_prog_JAVA="$JAVA" # Let the user override the test.
+< else
+<   IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
+<   ac_dummy="$PATH"
+<   for ac_dir in $ac_dummy; do
+<     test -z "$ac_dir" && ac_dir=.
+<     if test -f $ac_dir/$ac_word; then
+<       ac_cv_prog_JAVA="$ac_prog"
+<       break
+<     fi
+<   done
+<   IFS="$ac_save_ifs"
+< fi
+< fi
+< JAVA="$ac_cv_prog_JAVA"
+< if test -n "$JAVA"; then
+<   echo "$ac_t""$JAVA" 1>&6
+< else
+<   echo "$ac_t""no" 1>&6
+< fi
+< 
+< test -n "$JAVA" && break
+< done
+< 
+< else
+< 	test x$JAVA = x && for ac_prog in kaffe$EXEEXT java$EXEEXT
+< do
+< # Extract the first word of "$ac_prog", so it can be a program name with args.
+< set dummy $ac_prog; ac_word=$2
+< echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
+< echo "configure:1152: checking for $ac_word" >&5
+< if eval "test \"`echo '$''{'ac_cv_prog_JAVA'+set}'`\" = set"; then
+<   echo $ac_n "(cached) $ac_c" 1>&6
+< else
+<   if test -n "$JAVA"; then
+<   ac_cv_prog_JAVA="$JAVA" # Let the user override the test.
+< else
+<   IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
+<   ac_dummy="$PATH"
+<   for ac_dir in $ac_dummy; do
+<     test -z "$ac_dir" && ac_dir=.
+<     if test -f $ac_dir/$ac_word; then
+<       ac_cv_prog_JAVA="$ac_prog"
+<       break
+<     fi
+<   done
+<   IFS="$ac_save_ifs"
+< fi
+< fi
+< JAVA="$ac_cv_prog_JAVA"
+< if test -n "$JAVA"; then
+<   echo "$ac_t""$JAVA" 1>&6
+< else
+<   echo "$ac_t""no" 1>&6
+< fi
+< 
+< test -n "$JAVA" && break
+< done
+< test -n "$JAVA" || JAVA="$JAVAPREFIX"
+< 
+< fi
+< test x$JAVA = x && { echo "configure: error: no acceptable Java virtual machine found in \$PATH" 1>&2; exit 1; }
+< 
+< # Extract the first word of "uudecode$EXEEXT", so it can be a program name with args.
+< set dummy uudecode$EXEEXT; ac_word=$2
+< echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
+< echo "configure:1188: checking for $ac_word" >&5
+< if eval "test \"`echo '$''{'ac_cv_prog_uudecode'+set}'`\" = set"; then
+<   echo $ac_n "(cached) $ac_c" 1>&6
+< else
+<   if test -n "$uudecode"; then
+<   ac_cv_prog_uudecode="$uudecode" # Let the user override the test.
+< else
+<   IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
+<   ac_dummy="$PATH"
+<   for ac_dir in $ac_dummy; do
+<     test -z "$ac_dir" && ac_dir=.
+<     if test -f $ac_dir/$ac_word; then
+<       ac_cv_prog_uudecode="yes"
+<       break
+<     fi
+<   done
+<   IFS="$ac_save_ifs"
+< fi
+< fi
+< uudecode="$ac_cv_prog_uudecode"
+< if test -n "$uudecode"; then
+<   echo "$ac_t""$uudecode" 1>&6
+< else
+<   echo "$ac_t""no" 1>&6
+< fi
+< 
+< if test x$uudecode = xyes; then
+< echo $ac_n "checking if uudecode can decode base 64 file""... $ac_c" 1>&6
+< echo "configure:1216: checking if uudecode can decode base 64 file" >&5
+< if eval "test \"`echo '$''{'ac_cv_prog_uudecode_base64'+set}'`\" = set"; then
+<   echo $ac_n "(cached) $ac_c" 1>&6
+< else
+<   
+< cat << \EOF > Test.uue
+< begin-base64 644 Test.class
+< yv66vgADAC0AFQcAAgEABFRlc3QHAAQBABBqYXZhL2xhbmcvT2JqZWN0AQAE
+< bWFpbgEAFihbTGphdmEvbGFuZy9TdHJpbmc7KVYBAARDb2RlAQAPTGluZU51
+< bWJlclRhYmxlDAAKAAsBAARleGl0AQAEKEkpVgoADQAJBwAOAQAQamF2YS9s
+< YW5nL1N5c3RlbQEABjxpbml0PgEAAygpVgwADwAQCgADABEBAApTb3VyY2VG
+< aWxlAQAJVGVzdC5qYXZhACEAAQADAAAAAAACAAkABQAGAAEABwAAACEAAQAB
+< AAAABQO4AAyxAAAAAQAIAAAACgACAAAACgAEAAsAAQAPABAAAQAHAAAAIQAB
+< AAEAAAAFKrcAErEAAAABAAgAAAAKAAIAAAAEAAQABAABABMAAAACABQ=
+< ====
+< EOF
+< if uudecode$EXEEXT Test.uue; then
+< 	ac_cv_prog_uudecode_base64=yes
+< else
+< 	echo "configure: 1235: uudecode had trouble decoding base 64 file 'Test.uue'" >&5
+< 	echo "configure: failed file was:" >&5
+< 	cat Test.uue >&5
+< 	ac_cv_prog_uudecode_base64=no
+< fi
+< rm -f Test.uue
+< fi
+< 
+< echo "$ac_t""$ac_cv_prog_uudecode_base64" 1>&6
+< fi
+< if test x$ac_cv_prog_uudecode_base64 != xyes; then
+< 	rm -f Test.class
+< 	echo "configure: warning: I have to compile Test.class from scratch" 1>&2
+< 	if test x$ac_cv_prog_javac_works = xno; then
+< 		{ echo "configure: error: Cannot compile java source. $JAVAC does not work properly" 1>&2; exit 1; }
+< 	fi
+< 	if test x$ac_cv_prog_javac_works = x; then
+< 		
+< if test "x$JAVAPREFIX" = x; then
+< 	test "x$JAVAC" = x && for ac_prog in "gcj$EXEEXT -C" guavac$EXEEXT jikes$EXEEXT javac$EXEEXT
+< do
+< # Extract the first word of "$ac_prog", so it can be a program name with args.
+< set dummy $ac_prog; ac_word=$2
+< echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
+< echo "configure:1259: checking for $ac_word" >&5
+< if eval "test \"`echo '$''{'ac_cv_prog_JAVAC'+set}'`\" = set"; then
+<   echo $ac_n "(cached) $ac_c" 1>&6
+< else
+<   if test -n "$JAVAC"; then
+<   ac_cv_prog_JAVAC="$JAVAC" # Let the user override the test.
+< else
+<   IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
+<   ac_dummy="$PATH"
+<   for ac_dir in $ac_dummy; do
+<     test -z "$ac_dir" && ac_dir=.
+<     if test -f $ac_dir/$ac_word; then
+<       ac_cv_prog_JAVAC="$ac_prog"
+<       break
+<     fi
+<   done
+<   IFS="$ac_save_ifs"
+< fi
+< fi
+< JAVAC="$ac_cv_prog_JAVAC"
+< if test -n "$JAVAC"; then
+<   echo "$ac_t""$JAVAC" 1>&6
+< else
+<   echo "$ac_t""no" 1>&6
+< fi
+< 
+< test -n "$JAVAC" && break
+< done
+< 
+< else
+< 	test "x$JAVAC" = x && for ac_prog in "gcj$EXEEXT -C" guavac$EXEEXT jikes$EXEEXT javac$EXEEXT
+< do
+< # Extract the first word of "$ac_prog", so it can be a program name with args.
+< set dummy $ac_prog; ac_word=$2
+< echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
+< echo "configure:1294: checking for $ac_word" >&5
+< if eval "test \"`echo '$''{'ac_cv_prog_JAVAC'+set}'`\" = set"; then
+<   echo $ac_n "(cached) $ac_c" 1>&6
+< else
+<   if test -n "$JAVAC"; then
+<   ac_cv_prog_JAVAC="$JAVAC" # Let the user override the test.
+< else
+<   IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
+<   ac_dummy="$PATH"
+<   for ac_dir in $ac_dummy; do
+<     test -z "$ac_dir" && ac_dir=.
+<     if test -f $ac_dir/$ac_word; then
+<       ac_cv_prog_JAVAC="$ac_prog"
+<       break
+<     fi
+<   done
+<   IFS="$ac_save_ifs"
+< fi
+< fi
+< JAVAC="$ac_cv_prog_JAVAC"
+< if test -n "$JAVAC"; then
+<   echo "$ac_t""$JAVAC" 1>&6
+< else
+<   echo "$ac_t""no" 1>&6
+< fi
+---
+>   cat > conftest.$ac_ext <<EOF
+> #line 1098 "configure"
+> #include "confdefs.h"
+1319,1321c1100
+< test -n "$JAVAC" && break
+< done
+< test -n "$JAVAC" || JAVAC="$JAVAPREFIX"
+---
+> int main() {
+1323,1324c1102,1121
+< fi
+< test "x$JAVAC" = x && { echo "configure: error: no acceptable Java compiler found in \$PATH" 1>&2; exit 1; }
+---
+> /* Ultrix mips cc rejects this.  */
+> typedef int charset[2]; const charset x;
+> /* SunOS 4.1.1 cc rejects this.  */
+> char const *const *ccp;
+> char **p;
+> /* NEC SVR4.0.2 mips cc rejects this.  */
+> struct point {int x, y;};
+> static struct point const zero = {0,0};
+> /* AIX XL C 1.02.0.0 rejects this.
+>    It does not let you subtract one const X* pointer from another in an arm
+>    of an if-expression whose if-part is not a constant expression */
+> const char *g = "string";
+> ccp = &g + (g ? g-g : 0);
+> /* HPUX 7.0 cc rejects these. */
+> ++ccp;
+> p = (char**) ccp;
+> ccp = (char const *const *) p;
+> { /* SCO 3.2v4 cc rejects this.  */
+>   char *t;
+>   char const *s = 0 ? (char *) 0 : (char const *) 0;
+1326,1336c1123,1141
+< echo $ac_n "checking if $JAVAC works""... $ac_c" 1>&6
+< echo "configure:1328: checking if $JAVAC works" >&5
+< if eval "test \"`echo '$''{'ac_cv_prog_javac_works'+set}'`\" = set"; then
+<   echo $ac_n "(cached) $ac_c" 1>&6
+< else
+<   
+< JAVA_TEST=Test.java
+< CLASS_TEST=Test.class
+< cat << \EOF > $JAVA_TEST
+< /* #line 1336 "configure" */
+< public class Test {
+---
+>   *t++ = 0;
+> }
+> { /* Someone thinks the Sun supposedly-ANSI compiler will reject this.  */
+>   int x[] = {25, 17};
+>   const int *foo = &x[0];
+>   ++foo;
+> }
+> { /* Sun SC1.0 ANSI compiler rejects this -- but not the above. */
+>   typedef const int *iptr;
+>   iptr p = 0;
+>   ++p;
+> }
+> { /* AIX XL C 1.02.0.0 rejects this saying
+>      "k.c", line 2.27: 1506-025 (S) Operand must be a modifiable lvalue. */
+>   struct s { int j; const int *ap[3]; };
+>   struct s *b; b->j = 5;
+> }
+> { /* ULTRIX-32 V3.1 (Rev 9) vcc rejects this */
+>   const int foo = 10;
+1337a1143,1144
+> 
+> ; return 0; }
+1339,1340c1146,1148
+< if { ac_try='$JAVAC $JAVACFLAGS $JAVA_TEST'; { (eval echo configure:1340: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } >/dev/null 2>&1; then
+<   ac_cv_prog_javac_works=yes
+---
+> if { (eval echo configure:1147: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+>   rm -rf conftest*
+>   ac_cv_c_const=yes
+1342d1149
+<   { echo "configure: error: The Java compiler $JAVAC failed (see config.log, check the CLASSPATH?)" 1>&2; exit 1; }
+1344c1151,1153
+<   cat $JAVA_TEST >&5
+---
+>   cat conftest.$ac_ext >&5
+>   rm -rf conftest*
+>   ac_cv_c_const=no
+1346,1347c1155
+< rm -f $JAVA_TEST $CLASS_TEST
+< 
+---
+> rm -f conftest*
+1350,1369c1158,1161
+< echo "$ac_t""$ac_cv_prog_javac_works" 1>&6
+< 
+< 
+< 	fi
+< fi
+< echo $ac_n "checking if $JAVA works""... $ac_c" 1>&6
+< echo "configure:1357: checking if $JAVA works" >&5
+< if eval "test \"`echo '$''{'ac_cv_prog_java_works'+set}'`\" = set"; then
+<   echo $ac_n "(cached) $ac_c" 1>&6
+< else
+<   
+< JAVA_TEST=Test.java
+< CLASS_TEST=Test.class
+< TEST=Test
+< cat << \EOF > $JAVA_TEST
+< /* [#]line 1366 "configure" */
+< public class Test {
+< public static void main (String args[]) {
+< 	System.exit (0);
+< } }
+---
+> echo "$ac_t""$ac_cv_c_const" 1>&6
+> if test $ac_cv_c_const = no; then
+>   cat >> confdefs.h <<\EOF
+> #define const 
+1371,1387d1162
+< if test x$ac_cv_prog_uudecode_base64 != xyes; then
+< 	if { ac_try='$JAVAC $JAVACFLAGS $JAVA_TEST'; { (eval echo configure:1373: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } && test -s $CLASS_TEST; then
+< 		:
+< 	else
+< 	  echo "configure: failed program was:" >&5
+< 	  cat $JAVA_TEST >&5
+< 	  { echo "configure: error: The Java compiler $JAVAC failed (see config.log, check the CLASSPATH?)" 1>&2; exit 1; }
+< 	fi
+< fi
+< if { ac_try='$JAVA $JAVAFLAGS $TEST'; { (eval echo configure:1381: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } >/dev/null 2>&1; then
+<   ac_cv_prog_java_works=yes
+< else
+<   echo "configure: failed program was:" >&5
+<   cat $JAVA_TEST >&5
+<   { echo "configure: error: The Java VM $JAVA failed (see config.log, check the CLASSPATH?)" 1>&2; exit 1; }
+< fi
+< rm -fr $JAVA_TEST $CLASS_TEST Test.uue
+1391,1402c1166,1168
+< echo "$ac_t""$ac_cv_prog_java_works" 1>&6
+< 
+< 
+< 
+<   
+< CLASS=`echo org.apache.oro.text.regex.Pattern|sed 's/\./_/g'`
+< 
+< 
+< ac_var_name=`echo org.apache.oro.text.regex.Pattern | sed 's/\./_/g'`
+< echo $ac_n "checking for org.apache.oro.text.regex.Pattern class""... $ac_c" 1>&6
+< echo "configure:1402: checking for org.apache.oro.text.regex.Pattern class" >&5
+< if eval "test \"`echo '$''{'ac_cv_class_$ac_var_name'+set}'`\" = set"; then
+---
+>   echo $ac_n "checking for inline""... $ac_c" 1>&6
+> echo "configure:1168: checking for inline" >&5
+> if eval "test \"`echo '$''{'ac_cv_c_inline'+set}'`\" = set"; then
+1405,1446c1171,1175
+<   
+< if test x$ac_cv_prog_uudecode_base64 = xyes; then
+< cat << \EOF > Test.uue
+< begin-base64 644 Test.class
+< yv66vgADAC0AKQcAAgEABFRlc3QHAAQBABBqYXZhL2xhbmcvT2JqZWN0AQAE
+< bWFpbgEAFihbTGphdmEvbGFuZy9TdHJpbmc7KVYBAARDb2RlAQAPTGluZU51
+< bWJlclRhYmxlDAAKAAsBAANlcnIBABVMamF2YS9pby9QcmludFN0cmVhbTsJ
+< AA0ACQcADgEAEGphdmEvbGFuZy9TeXN0ZW0IABABABBNaXNzaW5nIGFyZ3Vt
+< ZW50DAASABMBAAdwcmludGxuAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWCgAV
+< ABEHABYBABNqYXZhL2lvL1ByaW50U3RyZWFtDAAYABkBAARleGl0AQAEKEkp
+< VgoADQAXDAAcAB0BAAdmb3JOYW1lAQAlKExqYXZhL2xhbmcvU3RyaW5nOylM
+< amF2YS9sYW5nL0NsYXNzOwoAHwAbBwAgAQAPamF2YS9sYW5nL0NsYXNzBwAi
+< AQAgamF2YS9sYW5nL0NsYXNzTm90Rm91bmRFeGNlcHRpb24BAAY8aW5pdD4B
+< AAMoKVYMACMAJAoAAwAlAQAKU291cmNlRmlsZQEACVRlc3QuamF2YQAhAAEA
+< AwAAAAAAAgAJAAUABgABAAcAAABtAAMAAwAAACkqvgSiABCyAAwSD7YAFBBN
+< uAAaKgMyuAAeTKcACE0EuAAaAUwDuAAasQABABMAGgAdACEAAQAIAAAAKgAK
+< AAAACgAAAAsABgANAA4ADgATABAAEwASAB4AFgAiABgAJAAZACgAGgABACMA
+< JAABAAcAAAAhAAEAAQAAAAUqtwAmsQAAAAEACAAAAAoAAgAAAAQABAAEAAEA
+< JwAAAAIAKA==
+< ====
+< EOF
+< 		if uudecode$EXEEXT Test.uue; then
+< 			:
+< 		else
+< 			echo "configure: 1430: uudecode had trouble decoding base 64 file 'Test.uue'" >&5
+< 			echo "configure: failed file was:" >&5
+< 			cat Test.uue >&5
+< 			ac_cv_prog_uudecode_base64=no
+< 		fi
+< 	rm -f Test.uue
+< 	if { ac_try='$JAVA $JAVAFLAGS Test org.apache.oro.text.regex.Pattern'; { (eval echo configure:1436: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } >/dev/null 2>&1; then
+< 		eval "ac_cv_class_$ac_var_name=yes"
+< 	else
+< 		eval "ac_cv_class_$ac_var_name=no"
+< 	fi
+< 	rm -f Test.class
+< else
+< 	
+< cat << \EOF > Test.java
+< /* #line 1445 "configure" */
+< import org.apache.oro.text.regex.Pattern;
+< public class Test {
+---
+>   ac_cv_c_inline=no
+> for ac_kw in inline __inline__ __inline; do
+>   cat > conftest.$ac_ext <<EOF
+> #line 1175 "configure"
+> #include "confdefs.h"
+1448c1177,1179
+< }
+---
+> int main() {
+> } $ac_kw foo() {
+> ; return 0; }
+1450,1452c1181,1183
+< if { ac_try='$JAVAC $JAVACFLAGS Test.java'; { (eval echo configure:1451: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } && test -s Test.class
+< then
+<   eval "ac_cv_class_$ac_var_name=yes"
+---
+> if { (eval echo configure:1182: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+>   rm -rf conftest*
+>   ac_cv_c_inline=$ac_kw; break
+1455,1469c1186
+<   cat Test.java >&5
+<   rm -fr Test*
+<   eval "ac_cv_class_$ac_var_name=no"
+< fi
+< rm -fr Test*
+< fi
+< eval "ac_var_val=$`eval echo ac_cv_class_$ac_var_name`"
+< eval "HAVE_$ac_var_name=$`echo ac_cv_class_$ac_var_val`"
+< HAVE_LAST_CLASS=$ac_var_val
+< if test x$ac_var_val = xyes; then
+< 	:
+< else
+< 	:
+< fi
+< 
+---
+>   cat conftest.$ac_ext >&5
+1470a1188,1189
+> rm -f conftest*
+> done
+1472,1476d1190
+< eval "ac_var_val=$`eval echo ac_cv_class_$ac_var_name`"
+< echo "$ac_t""$ac_var_val" 1>&6
+< 
+< if test "$HAVE_LAST_CLASS" = "no"; then
+<         { echo "configure: error: Required class org.apache.oro.text.regex.Pattern missing, exiting." 1>&2; exit 1; }
+1479,1481c1193,1204
+<   
+< CLASS=`echo junit.framework.TestCase|sed 's/\./_/g'`
+< 
+---
+> echo "$ac_t""$ac_cv_c_inline" 1>&6
+> case "$ac_cv_c_inline" in
+>   inline | yes) ;;
+>   no) cat >> confdefs.h <<\EOF
+> #define inline 
+> EOF
+>  ;;
+>   *)  cat >> confdefs.h <<EOF
+> #define inline $ac_cv_c_inline
+> EOF
+>  ;;
+> esac
+1483,1486c1206,1208
+< ac_var_name=`echo junit.framework.TestCase | sed 's/\./_/g'`
+< echo $ac_n "checking for junit.framework.TestCase class""... $ac_c" 1>&6
+< echo "configure:1486: checking for junit.framework.TestCase class" >&5
+< if eval "test \"`echo '$''{'ac_cv_class_$ac_var_name'+set}'`\" = set"; then
+---
+>   echo $ac_n "checking whether byte ordering is bigendian""... $ac_c" 1>&6
+> echo "configure:1208: checking whether byte ordering is bigendian" >&5
+> if eval "test \"`echo '$''{'ac_cv_c_bigendian'+set}'`\" = set"; then
+1489,1508c1211,1223
+<   
+< if test x$ac_cv_prog_uudecode_base64 = xyes; then
+< cat << \EOF > Test.uue
+< begin-base64 644 Test.class
+< yv66vgADAC0AKQcAAgEABFRlc3QHAAQBABBqYXZhL2xhbmcvT2JqZWN0AQAE
+< bWFpbgEAFihbTGphdmEvbGFuZy9TdHJpbmc7KVYBAARDb2RlAQAPTGluZU51
+< bWJlclRhYmxlDAAKAAsBAANlcnIBABVMamF2YS9pby9QcmludFN0cmVhbTsJ
+< AA0ACQcADgEAEGphdmEvbGFuZy9TeXN0ZW0IABABABBNaXNzaW5nIGFyZ3Vt
+< ZW50DAASABMBAAdwcmludGxuAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWCgAV
+< ABEHABYBABNqYXZhL2lvL1ByaW50U3RyZWFtDAAYABkBAARleGl0AQAEKEkp
+< VgoADQAXDAAcAB0BAAdmb3JOYW1lAQAlKExqYXZhL2xhbmcvU3RyaW5nOylM
+< amF2YS9sYW5nL0NsYXNzOwoAHwAbBwAgAQAPamF2YS9sYW5nL0NsYXNzBwAi
+< AQAgamF2YS9sYW5nL0NsYXNzTm90Rm91bmRFeGNlcHRpb24BAAY8aW5pdD4B
+< AAMoKVYMACMAJAoAAwAlAQAKU291cmNlRmlsZQEACVRlc3QuamF2YQAhAAEA
+< AwAAAAAAAgAJAAUABgABAAcAAABtAAMAAwAAACkqvgSiABCyAAwSD7YAFBBN
+< uAAaKgMyuAAeTKcACE0EuAAaAUwDuAAasQABABMAGgAdACEAAQAIAAAAKgAK
+< AAAACgAAAAsABgANAA4ADgATABAAEwASAB4AFgAiABgAJAAZACgAGgABACMA
+< JAABAAcAAAAhAAEAAQAAAAUqtwAmsQAAAAEACAAAAAoAAgAAAAQABAAEAAEA
+< JwAAAAIAKA==
+< ====
+---
+>   ac_cv_c_bigendian=unknown
+> # See if sys/param.h defines the BYTE_ORDER macro.
+> cat > conftest.$ac_ext <<EOF
+> #line 1215 "configure"
+> #include "confdefs.h"
+> #include <sys/types.h>
+> #include <sys/param.h>
+> int main() {
+> 
+> #if !BYTE_ORDER || !BIG_ENDIAN || !LITTLE_ENDIAN
+>  bogus endian macros
+> #endif
+> ; return 0; }
+1510,1530c1225,1233
+< 		if uudecode$EXEEXT Test.uue; then
+< 			:
+< 		else
+< 			echo "configure: 1514: uudecode had trouble decoding base 64 file 'Test.uue'" >&5
+< 			echo "configure: failed file was:" >&5
+< 			cat Test.uue >&5
+< 			ac_cv_prog_uudecode_base64=no
+< 		fi
+< 	rm -f Test.uue
+< 	if { ac_try='$JAVA $JAVAFLAGS Test junit.framework.TestCase'; { (eval echo configure:1520: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } >/dev/null 2>&1; then
+< 		eval "ac_cv_class_$ac_var_name=yes"
+< 	else
+< 		eval "ac_cv_class_$ac_var_name=no"
+< 	fi
+< 	rm -f Test.class
+< else
+< 	
+< cat << \EOF > Test.java
+< /* #line 1529 "configure" */
+< import junit.framework.TestCase;
+< public class Test {
+---
+> if { (eval echo configure:1226: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+>   rm -rf conftest*
+>   # It does; now see whether it defined to BIG_ENDIAN or not.
+> cat > conftest.$ac_ext <<EOF
+> #line 1230 "configure"
+> #include "confdefs.h"
+> #include <sys/types.h>
+> #include <sys/param.h>
+> int main() {
+1532c1235,1238
+< }
+---
+> #if BYTE_ORDER != BIG_ENDIAN
+>  not big endian
+> #endif
+> ; return 0; }
+1534,1536c1240,1242
+< if { ac_try='$JAVAC $JAVACFLAGS Test.java'; { (eval echo configure:1535: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } && test -s Test.class
+< then
+<   eval "ac_cv_class_$ac_var_name=yes"
+---
+> if { (eval echo configure:1241: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+>   rm -rf conftest*
+>   ac_cv_c_bigendian=yes
+1539,1589c1245,1247
+<   cat Test.java >&5
+<   rm -fr Test*
+<   eval "ac_cv_class_$ac_var_name=no"
+< fi
+< rm -fr Test*
+< fi
+< eval "ac_var_val=$`eval echo ac_cv_class_$ac_var_name`"
+< eval "HAVE_$ac_var_name=$`echo ac_cv_class_$ac_var_val`"
+< HAVE_LAST_CLASS=$ac_var_val
+< if test x$ac_var_val = xyes; then
+< 	:
+< else
+< 	:
+< fi
+< 
+< fi
+< 
+< eval "ac_var_val=$`eval echo ac_cv_class_$ac_var_name`"
+< echo "$ac_t""$ac_var_val" 1>&6
+< 
+< if test "$HAVE_LAST_CLASS" = "no"; then
+<         { echo "configure: error: Required class junit.framework.TestCase missing, exiting." 1>&2; exit 1; }
+< fi
+< 
+<   # Extract the first word of "javah", so it can be a program name with args.
+< set dummy javah; ac_word=$2
+< echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
+< echo "configure:1567: checking for $ac_word" >&5
+< if eval "test \"`echo '$''{'ac_cv_path_JAVAH'+set}'`\" = set"; then
+<   echo $ac_n "(cached) $ac_c" 1>&6
+< else
+<   case "$JAVAH" in
+<   /*)
+<   ac_cv_path_JAVAH="$JAVAH" # Let the user override the test with a path.
+<   ;;
+<   ?:/*)			 
+<   ac_cv_path_JAVAH="$JAVAH" # Let the user override the test with a dos path.
+<   ;;
+<   *)
+<   IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
+<   ac_dummy="$PATH"
+<   for ac_dir in $ac_dummy; do 
+<     test -z "$ac_dir" && ac_dir=.
+<     if test -f $ac_dir/$ac_word; then
+<       ac_cv_path_JAVAH="$ac_dir/$ac_word"
+<       break
+<     fi
+<   done
+<   IFS="$ac_save_ifs"
+<   ;;
+< esac
+---
+>   cat conftest.$ac_ext >&5
+>   rm -rf conftest*
+>   ac_cv_c_bigendian=no
+1591,1593c1249
+< JAVAH="$ac_cv_path_JAVAH"
+< if test -n "$JAVAH"; then
+<   echo "$ac_t""$JAVAH" 1>&6
+---
+> rm -f conftest*
+1595c1251,1252
+<   echo "$ac_t""no" 1>&6
+---
+>   echo "configure: failed program was:" >&5
+>   cat conftest.$ac_ext >&5
+1597,1603c1254,1257
+< 
+<   # Extract the first word of "javadoc", so it can be a program name with args.
+< set dummy javadoc; ac_word=$2
+< echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
+< echo "configure:1602: checking for $ac_word" >&5
+< if eval "test \"`echo '$''{'ac_cv_path_JAVADOC'+set}'`\" = set"; then
+<   echo $ac_n "(cached) $ac_c" 1>&6
+---
+> rm -f conftest*
+> if test $ac_cv_c_bigendian = unknown; then
+> if test "$cross_compiling" = yes; then
+>     { echo "configure: error: can not run test program while cross compiling" 1>&2; exit 1; }
+1605,1628c1259,1275
+<   case "$JAVADOC" in
+<   /*)
+<   ac_cv_path_JAVADOC="$JAVADOC" # Let the user override the test with a path.
+<   ;;
+<   ?:/*)			 
+<   ac_cv_path_JAVADOC="$JAVADOC" # Let the user override the test with a dos path.
+<   ;;
+<   *)
+<   IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
+<   ac_dummy="$PATH"
+<   for ac_dir in $ac_dummy; do 
+<     test -z "$ac_dir" && ac_dir=.
+<     if test -f $ac_dir/$ac_word; then
+<       ac_cv_path_JAVADOC="$ac_dir/$ac_word"
+<       break
+<     fi
+<   done
+<   IFS="$ac_save_ifs"
+<   ;;
+< esac
+< fi
+< JAVADOC="$ac_cv_path_JAVADOC"
+< if test -n "$JAVADOC"; then
+<   echo "$ac_t""$JAVADOC" 1>&6
+---
+>   cat > conftest.$ac_ext <<EOF
+> #line 1261 "configure"
+> #include "confdefs.h"
+> main () {
+>   /* Are we little or big endian?  From Harbison&Steele.  */
+>   union
+>   {
+>     long l;
+>     char c[sizeof (long)];
+>   } u;
+>   u.l = 1;
+>   exit (u.c[sizeof (long) - 1] == 1);
+> }
+> EOF
+> if { (eval echo configure:1274: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+> then
+>   ac_cv_c_bigendian=no
+1630c1277,1282
+<   echo "$ac_t""no" 1>&6
+---
+>   echo "configure: failed program was:" >&5
+>   cat conftest.$ac_ext >&5
+>   rm -fr conftest*
+>   ac_cv_c_bigendian=yes
+> fi
+> rm -fr conftest*
+1633,1659d1284
+<   # Extract the first word of "jar", so it can be a program name with args.
+< set dummy jar; ac_word=$2
+< echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
+< echo "configure:1637: checking for $ac_word" >&5
+< if eval "test \"`echo '$''{'ac_cv_path_JAR'+set}'`\" = set"; then
+<   echo $ac_n "(cached) $ac_c" 1>&6
+< else
+<   case "$JAR" in
+<   /*)
+<   ac_cv_path_JAR="$JAR" # Let the user override the test with a path.
+<   ;;
+<   ?:/*)			 
+<   ac_cv_path_JAR="$JAR" # Let the user override the test with a dos path.
+<   ;;
+<   *)
+<   IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
+<   ac_dummy="$PATH"
+<   for ac_dir in $ac_dummy; do 
+<     test -z "$ac_dir" && ac_dir=.
+<     if test -f $ac_dir/$ac_word; then
+<       ac_cv_path_JAR="$ac_dir/$ac_word"
+<       break
+<     fi
+<   done
+<   IFS="$ac_save_ifs"
+<   ;;
+< esac
+1661,1665d1285
+< JAR="$ac_cv_path_JAR"
+< if test -n "$JAR"; then
+<   echo "$ac_t""$JAR" 1>&6
+< else
+<   echo "$ac_t""no" 1>&6
+1667a1288,1292
+> echo "$ac_t""$ac_cv_c_bigendian" 1>&6
+> if test $ac_cv_c_bigendian = yes; then
+>   cat >> confdefs.h <<\EOF
+> #define WORDS_BIGENDIAN 1
+> EOF
+1669,1673d1293
+<     echo $ac_n "checking how to run the C preprocessor""... $ac_c" 1>&6
+< echo "configure:1671: checking how to run the C preprocessor" >&5
+< # On Suns, sometimes $CPP names a directory.
+< if test -n "$CPP" && test -d "$CPP"; then
+<   CPP=
+1675,1676c1295,1298
+< if test -z "$CPP"; then
+< if eval "test \"`echo '$''{'ac_cv_prog_CPP'+set}'`\" = set"; then
+---
+> 
+>   echo $ac_n "checking size of long""... $ac_c" 1>&6
+> echo "configure:1298: checking size of long" >&5
+> if eval "test \"`echo '$''{'ac_cv_sizeof_long'+set}'`\" = set"; then
+1679,1683c1301,1303
+<     # This must be in double quotes, not single quotes, because CPP may get
+<   # substituted into the Makefile and "${CC-cc}" will confuse make.
+<   CPP="${CC-cc} -E"
+<   # On the NeXT, cc -E runs the code through the compiler's parser,
+<   # not just through cpp.
+---
+>   if test "$cross_compiling" = yes; then
+>     { echo "configure: error: can not run test program while cross compiling" 1>&2; exit 1; }
+> else
+1685c1305
+< #line 1686 "configure"
+---
+> #line 1306 "configure"
+1687,1688c1307,1314
+< #include <assert.h>
+< Syntax Error
+---
+> #include <stdio.h>
+> main()
+> {
+>   FILE *f=fopen("conftestval", "w");
+>   if (!f) exit(1);
+>   fprintf(f, "%d\n", sizeof(long));
+>   exit(0);
+> }
+1690,1694c1316,1318
+< ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
+< { (eval echo configure:1692: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+< ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
+< if test -z "$ac_err"; then
+<   :
+---
+> if { (eval echo configure:1317: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+> then
+>   ac_cv_sizeof_long=`cat conftestval`
+1696d1319
+<   echo "$ac_err" >&5
+1699,1700c1322,1342
+<   rm -rf conftest*
+<   CPP="${CC-cc} -E -traditional-cpp"
+---
+>   rm -fr conftest*
+>   ac_cv_sizeof_long=0
+> fi
+> rm -fr conftest*
+> fi
+> 
+> fi
+> echo "$ac_t""$ac_cv_sizeof_long" 1>&6
+> cat >> confdefs.h <<EOF
+> #define SIZEOF_LONG $ac_cv_sizeof_long
+> EOF
+> 
+> 
+>   echo $ac_n "checking size of int""... $ac_c" 1>&6
+> echo "configure:1337: checking size of int" >&5
+> if eval "test \"`echo '$''{'ac_cv_sizeof_int'+set}'`\" = set"; then
+>   echo $ac_n "(cached) $ac_c" 1>&6
+> else
+>   if test "$cross_compiling" = yes; then
+>     { echo "configure: error: can not run test program while cross compiling" 1>&2; exit 1; }
+> else
+1702c1344
+< #line 1703 "configure"
+---
+> #line 1345 "configure"
+1704,1705c1346,1353
+< #include <assert.h>
+< Syntax Error
+---
+> #include <stdio.h>
+> main()
+> {
+>   FILE *f=fopen("conftestval", "w");
+>   if (!f) exit(1);
+>   fprintf(f, "%d\n", sizeof(int));
+>   exit(0);
+> }
+1707,1711c1355,1357
+< ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
+< { (eval echo configure:1709: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+< ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
+< if test -z "$ac_err"; then
+<   :
+---
+> if { (eval echo configure:1356: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+> then
+>   ac_cv_sizeof_int=`cat conftestval`
+1713d1358
+<   echo "$ac_err" >&5
+1716,1717c1361,1381
+<   rm -rf conftest*
+<   CPP="${CC-cc} -nologo -E"
+---
+>   rm -fr conftest*
+>   ac_cv_sizeof_int=0
+> fi
+> rm -fr conftest*
+> fi
+> 
+> fi
+> echo "$ac_t""$ac_cv_sizeof_int" 1>&6
+> cat >> confdefs.h <<EOF
+> #define SIZEOF_INT $ac_cv_sizeof_int
+> EOF
+> 
+> 
+>   for ac_hdr in unistd.h
+> do
+> ac_safe=`echo "$ac_hdr" | sed 'y%./+-%__p_%'`
+> echo $ac_n "checking for $ac_hdr""... $ac_c" 1>&6
+> echo "configure:1379: checking for $ac_hdr" >&5
+> if eval "test \"`echo '$''{'ac_cv_header_$ac_safe'+set}'`\" = set"; then
+>   echo $ac_n "(cached) $ac_c" 1>&6
+> else
+1719c1383
+< #line 1720 "configure"
+---
+> #line 1384 "configure"
+1721,1722c1385
+< #include <assert.h>
+< Syntax Error
+---
+> #include <$ac_hdr>
+1725c1388
+< { (eval echo configure:1726: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+---
+> { (eval echo configure:1389: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+1728c1391,1392
+<   :
+---
+>   rm -rf conftest*
+>   eval "ac_cv_header_$ac_safe=yes"
+1734,1738c1398
+<   CPP=/lib/cpp
+< fi
+< rm -f conftest*
+< fi
+< rm -f conftest*
+---
+>   eval "ac_cv_header_$ac_safe=no"
+1741d1400
+<   ac_cv_prog_CPP="$CPP"
+1743c1402,1408
+<   CPP="$ac_cv_prog_CPP"
+---
+> if eval "test \"`echo '$ac_cv_header_'$ac_safe`\" = yes"; then
+>   echo "$ac_t""yes" 1>&6
+>     ac_tr_hdr=HAVE_`echo $ac_hdr | sed 'y%abcdefghijklmnopqrstuvwxyz./-%ABCDEFGHIJKLMNOPQRSTUVWXYZ___%'`
+>   cat >> confdefs.h <<EOF
+> #define $ac_tr_hdr 1
+> EOF
+>  
+1745c1410
+<   ac_cv_prog_CPP="$CPP"
+---
+>   echo "$ac_t""no" 1>&6
+1747c1412
+< echo "$ac_t""$CPP" 1>&6
+---
+> done
+1749,1751c1414,1419
+< echo $ac_n "checking for ANSI C header files""... $ac_c" 1>&6
+< echo "configure:1751: checking for ANSI C header files" >&5
+< if eval "test \"`echo '$''{'ac_cv_header_stdc'+set}'`\" = set"; then
+---
+>   for ac_hdr in sys/stat.h
+> do
+> ac_safe=`echo "$ac_hdr" | sed 'y%./+-%__p_%'`
+> echo $ac_n "checking for $ac_hdr""... $ac_c" 1>&6
+> echo "configure:1419: checking for $ac_hdr" >&5
+> if eval "test \"`echo '$''{'ac_cv_header_$ac_safe'+set}'`\" = set"; then
+1755c1423
+< #line 1756 "configure"
+---
+> #line 1424 "configure"
+1757,1760c1425
+< #include <stdlib.h>
+< #include <stdarg.h>
+< #include <string.h>
+< #include <float.h>
+---
+> #include <$ac_hdr>
+1763c1428
+< { (eval echo configure:1764: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+---
+> { (eval echo configure:1429: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+1767c1432
+<   ac_cv_header_stdc=yes
+---
+>   eval "ac_cv_header_$ac_safe=yes"
+1773c1438
+<   ac_cv_header_stdc=no
+---
+>   eval "ac_cv_header_$ac_safe=no"
+1775a1441,1452
+> fi
+> if eval "test \"`echo '$ac_cv_header_'$ac_safe`\" = yes"; then
+>   echo "$ac_t""yes" 1>&6
+>     ac_tr_hdr=HAVE_`echo $ac_hdr | sed 'y%abcdefghijklmnopqrstuvwxyz./-%ABCDEFGHIJKLMNOPQRSTUVWXYZ___%'`
+>   cat >> confdefs.h <<EOF
+> #define $ac_tr_hdr 1
+> EOF
+>  
+> else
+>   echo "$ac_t""no" 1>&6
+> fi
+> done
+1777,1780c1454,1458
+< if test $ac_cv_header_stdc = yes; then
+<   # SunOS 4.x string.h does not declare mem*, contrary to ANSI.
+< cat > conftest.$ac_ext <<EOF
+< #line 1781 "configure"
+---
+> 
+>     echo $ac_n "checking if compiler supports long long integer types""... $ac_c" 1>&6
+> echo "configure:1457: checking if compiler supports long long integer types" >&5
+>   cat > conftest.$ac_ext <<EOF
+> #line 1459 "configure"
+1782c1460,1463
+< #include <string.h>
+---
+> 
+> int main() {
+>  long long a; 
+> ; return 0; }
+1784,1786c1465,1467
+< if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+<   egrep "memchr" >/dev/null 2>&1; then
+<   :
+---
+> if { (eval echo configure:1466: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+>   rm -rf conftest*
+>   cf_longlong=yes
+1787a1469,1470
+>   echo "configure: failed program was:" >&5
+>   cat conftest.$ac_ext >&5
+1789c1472
+<   ac_cv_header_stdc=no
+---
+>   cf_longlong=no
+1791a1475,1483
+>   echo "$ac_t""$cf_longlong" 1>&6
+>   test $cf_longlong = yes && cat >> confdefs.h <<\EOF
+> #define HAVE_INT64 1
+> EOF
+> 
+>   test $cf_longlong = yes && cat >> confdefs.h <<\EOF
+> #define HAVE_LONG_LONG 1
+> EOF
+> 
+1792a1485,1500
+>   if test $GCC = yes; then 
+>     CFLAGS="-g -O4 -Wall -Winline -finline-functions -fomit-frame-pointer"
+>     case "$target" in
+>       # At one point, -m486 -malign-double showed better performance, but
+>       # now it doesn't appear to be so
+>       i?86-*) CFLAGS="$CFLAGS";;
+>     esac
+>   fi
+> 
+>   test -z "$enable_java" && enable_java=yes
+>   if test "$enable_java" = "yes" ; then
+>         
+> if test "x$CLASSPATH" = x; then
+>         echo "You have no CLASSPATH, I hope it is good"
+> else
+>         echo "You have CLASSPATH $CLASSPATH, hope it is correct"
+1795,1798c1503,1509
+< if test $ac_cv_header_stdc = yes; then
+<   # ISC 2.0.2 stdlib.h does not declare free, contrary to ANSI.
+< cat > conftest.$ac_ext <<EOF
+< #line 1799 "configure"
+---
+>     echo $ac_n "checking for Cygwin environment""... $ac_c" 1>&6
+> echo "configure:1505: checking for Cygwin environment" >&5
+> if eval "test \"`echo '$''{'ac_cv_cygwin'+set}'`\" = set"; then
+>   echo $ac_n "(cached) $ac_c" 1>&6
+> else
+>   cat > conftest.$ac_ext <<EOF
+> #line 1510 "configure"
+1800,1804c1511,1522
+< #include <stdlib.h>
+< EOF
+< if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+<   egrep "free" >/dev/null 2>&1; then
+<   :
+---
+> 
+> int main() {
+> 
+> #ifndef __CYGWIN__
+> #define __CYGWIN__ __CYGWIN32__
+> #endif
+> return __CYGWIN__;
+> ; return 0; }
+> EOF
+> if { (eval echo configure:1521: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+>   rm -rf conftest*
+>   ac_cv_cygwin=yes
+1805a1524,1525
+>   echo "configure: failed program was:" >&5
+>   cat conftest.$ac_ext >&5
+1807c1527
+<   ac_cv_header_stdc=no
+---
+>   ac_cv_cygwin=no
+1810c1530
+< 
+---
+> rm -f conftest*
+1813,1816c1533,1539
+< if test $ac_cv_header_stdc = yes; then
+<   # /bin/cc in Irix-4.0.5 gets non-ANSI ctype macros unless using -ansi.
+< if test "$cross_compiling" = yes; then
+<   :
+---
+> echo "$ac_t""$ac_cv_cygwin" 1>&6
+> CYGWIN=
+> test "$ac_cv_cygwin" = yes && CYGWIN=yes
+> echo $ac_n "checking for mingw32 environment""... $ac_c" 1>&6
+> echo "configure:1538: checking for mingw32 environment" >&5
+> if eval "test \"`echo '$''{'ac_cv_mingw32'+set}'`\" = set"; then
+>   echo $ac_n "(cached) $ac_c" 1>&6
+1819c1542
+< #line 1820 "configure"
+---
+> #line 1543 "configure"
+1821,1827d1543
+< #include <ctype.h>
+< #define ISLOWER(c) ('a' <= (c) && (c) <= 'z')
+< #define TOUPPER(c) (ISLOWER(c) ? 'A' + ((c) - 'a') : (c))
+< #define XOR(e, f) (((e) && !(f)) || (!(e) && (f)))
+< int main () { int i; for (i = 0; i < 256; i++)
+< if (XOR (islower (i), ISLOWER (i)) || toupper (i) != TOUPPER (i)) exit(2);
+< exit (0); }
+1828a1545,1547
+> int main() {
+> return __MINGW32__;
+> ; return 0; }
+1830,1832c1549,1551
+< if { (eval echo configure:1831: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+< then
+<   :
+---
+> if { (eval echo configure:1550: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+>   rm -rf conftest*
+>   ac_cv_mingw32=yes
+1836,1837c1555,1556
+<   rm -fr conftest*
+<   ac_cv_header_stdc=no
+---
+>   rm -rf conftest*
+>   ac_cv_mingw32=no
+1839c1558,1559
+< rm -fr conftest*
+---
+> rm -f conftest*
+> rm -f conftest*
+1841a1562,1589
+> echo "$ac_t""$ac_cv_mingw32" 1>&6
+> MINGW32=
+> test "$ac_cv_mingw32" = yes && MINGW32=yes
+> 
+> 
+> echo $ac_n "checking for executable suffix""... $ac_c" 1>&6
+> echo "configure:1569: checking for executable suffix" >&5
+> if eval "test \"`echo '$''{'ac_cv_exeext'+set}'`\" = set"; then
+>   echo $ac_n "(cached) $ac_c" 1>&6
+> else
+>   if test "$CYGWIN" = yes || test "$MINGW32" = yes; then
+>   ac_cv_exeext=.exe
+> else
+>   rm -f conftest*
+>   echo 'int main () { return 0; }' > conftest.$ac_ext
+>   ac_cv_exeext=
+>   if { (eval echo configure:1579: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; }; then
+>     for file in conftest.*; do
+>       case $file in
+>       *.c | *.o | *.obj) ;;
+>       *) ac_cv_exeext=`echo $file | sed -e s/conftest//` ;;
+>       esac
+>     done
+>   else
+>     { echo "configure: error: installation or configuration problem: compiler cannot create executables." 1>&2; exit 1; }
+>   fi
+>   rm -f conftest*
+>   test x"${ac_cv_exeext}" = x && ac_cv_exeext=no
+1845,1849c1593,1596
+< echo "$ac_t""$ac_cv_header_stdc" 1>&6
+< if test $ac_cv_header_stdc = yes; then
+<   cat >> confdefs.h <<\EOF
+< #define STDC_HEADERS 1
+< EOF
+---
+> EXEEXT=""
+> test x"${ac_cv_exeext}" != xno && EXEEXT=${ac_cv_exeext}
+> echo "$ac_t""${ac_cv_exeext}" 1>&6
+> ac_exeext=$EXEEXT
+1850a1598,1628
+> 
+> if test "x$JAVAPREFIX" = x; then
+> 	test "x$JAVAC" = x && for ac_prog in "gcj$EXEEXT -C" guavac$EXEEXT jikes$EXEEXT javac$EXEEXT
+> do
+> # Extract the first word of "$ac_prog", so it can be a program name with args.
+> set dummy $ac_prog; ac_word=$2
+> echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
+> echo "configure:1606: checking for $ac_word" >&5
+> if eval "test \"`echo '$''{'ac_cv_prog_JAVAC'+set}'`\" = set"; then
+>   echo $ac_n "(cached) $ac_c" 1>&6
+> else
+>   if test -n "$JAVAC"; then
+>   ac_cv_prog_JAVAC="$JAVAC" # Let the user override the test.
+> else
+>   IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
+>   ac_dummy="$PATH"
+>   for ac_dir in $ac_dummy; do
+>     test -z "$ac_dir" && ac_dir=.
+>     if test -f $ac_dir/$ac_word; then
+>       ac_cv_prog_JAVAC="$ac_prog"
+>       break
+>     fi
+>   done
+>   IFS="$ac_save_ifs"
+> fi
+> fi
+> JAVAC="$ac_cv_prog_JAVAC"
+> if test -n "$JAVAC"; then
+>   echo "$ac_t""$JAVAC" 1>&6
+> else
+>   echo "$ac_t""no" 1>&6
+1852a1631,1632
+> test -n "$JAVAC" && break
+> done
+1854,1856c1634,1641
+<     echo $ac_n "checking for working const""... $ac_c" 1>&6
+< echo "configure:1856: checking for working const" >&5
+< if eval "test \"`echo '$''{'ac_cv_c_const'+set}'`\" = set"; then
+---
+> else
+> 	test "x$JAVAC" = x && for ac_prog in "gcj$EXEEXT -C" guavac$EXEEXT jikes$EXEEXT javac$EXEEXT
+> do
+> # Extract the first word of "$ac_prog", so it can be a program name with args.
+> set dummy $ac_prog; ac_word=$2
+> echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
+> echo "configure:1641: checking for $ac_word" >&5
+> if eval "test \"`echo '$''{'ac_cv_prog_JAVAC'+set}'`\" = set"; then
+1859,1861c1644,1664
+<   cat > conftest.$ac_ext <<EOF
+< #line 1861 "configure"
+< #include "confdefs.h"
+---
+>   if test -n "$JAVAC"; then
+>   ac_cv_prog_JAVAC="$JAVAC" # Let the user override the test.
+> else
+>   IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
+>   ac_dummy="$PATH"
+>   for ac_dir in $ac_dummy; do
+>     test -z "$ac_dir" && ac_dir=.
+>     if test -f $ac_dir/$ac_word; then
+>       ac_cv_prog_JAVAC="$ac_prog"
+>       break
+>     fi
+>   done
+>   IFS="$ac_save_ifs"
+> fi
+> fi
+> JAVAC="$ac_cv_prog_JAVAC"
+> if test -n "$JAVAC"; then
+>   echo "$ac_t""$JAVAC" 1>&6
+> else
+>   echo "$ac_t""no" 1>&6
+> fi
+1863c1666,1668
+< int main() {
+---
+> test -n "$JAVAC" && break
+> done
+> test -n "$JAVAC" || JAVAC="$JAVAPREFIX"
+1865,1884c1670,1671
+< /* Ultrix mips cc rejects this.  */
+< typedef int charset[2]; const charset x;
+< /* SunOS 4.1.1 cc rejects this.  */
+< char const *const *ccp;
+< char **p;
+< /* NEC SVR4.0.2 mips cc rejects this.  */
+< struct point {int x, y;};
+< static struct point const zero = {0,0};
+< /* AIX XL C 1.02.0.0 rejects this.
+<    It does not let you subtract one const X* pointer from another in an arm
+<    of an if-expression whose if-part is not a constant expression */
+< const char *g = "string";
+< ccp = &g + (g ? g-g : 0);
+< /* HPUX 7.0 cc rejects these. */
+< ++ccp;
+< p = (char**) ccp;
+< ccp = (char const *const *) p;
+< { /* SCO 3.2v4 cc rejects this.  */
+<   char *t;
+<   char const *s = 0 ? (char *) 0 : (char const *) 0;
+---
+> fi
+> test "x$JAVAC" = x && { echo "configure: error: no acceptable Java compiler found in \$PATH" 1>&2; exit 1; }
+1886,1904c1673,1683
+<   *t++ = 0;
+< }
+< { /* Someone thinks the Sun supposedly-ANSI compiler will reject this.  */
+<   int x[] = {25, 17};
+<   const int *foo = &x[0];
+<   ++foo;
+< }
+< { /* Sun SC1.0 ANSI compiler rejects this -- but not the above. */
+<   typedef const int *iptr;
+<   iptr p = 0;
+<   ++p;
+< }
+< { /* AIX XL C 1.02.0.0 rejects this saying
+<      "k.c", line 2.27: 1506-025 (S) Operand must be a modifiable lvalue. */
+<   struct s { int j; const int *ap[3]; };
+<   struct s *b; b->j = 5;
+< }
+< { /* ULTRIX-32 V3.1 (Rev 9) vcc rejects this */
+<   const int foo = 10;
+---
+> echo $ac_n "checking if $JAVAC works""... $ac_c" 1>&6
+> echo "configure:1675: checking if $JAVAC works" >&5
+> if eval "test \"`echo '$''{'ac_cv_prog_javac_works'+set}'`\" = set"; then
+>   echo $ac_n "(cached) $ac_c" 1>&6
+> else
+>   
+> JAVA_TEST=Test.java
+> CLASS_TEST=Test.class
+> cat << \EOF > $JAVA_TEST
+> /* #line 1683 "configure" */
+> public class Test {
+1906,1907d1684
+< 
+< ; return 0; }
+1909,1911c1686,1687
+< if { (eval echo configure:1910: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+<   rm -rf conftest*
+<   ac_cv_c_const=yes
+---
+> if { ac_try='$JAVAC $JAVACFLAGS $JAVA_TEST'; { (eval echo configure:1687: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } >/dev/null 2>&1; then
+>   ac_cv_prog_javac_works=yes
+1912a1689
+>   { echo "configure: error: The Java compiler $JAVAC failed (see config.log, check the CLASSPATH?)" 1>&2; exit 1; }
+1914,1916c1691,1758
+<   cat conftest.$ac_ext >&5
+<   rm -rf conftest*
+<   ac_cv_c_const=no
+---
+>   cat $JAVA_TEST >&5
+> fi
+> rm -f $JAVA_TEST $CLASS_TEST
+> 
+> fi
+> 
+> echo "$ac_t""$ac_cv_prog_javac_works" 1>&6
+> 
+> 
+>     
+> if test x$JAVAPREFIX = x; then
+> 	test x$JAVA = x && for ac_prog in kaffe$EXEEXT java$EXEEXT
+> do
+> # Extract the first word of "$ac_prog", so it can be a program name with args.
+> set dummy $ac_prog; ac_word=$2
+> echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
+> echo "configure:1708: checking for $ac_word" >&5
+> if eval "test \"`echo '$''{'ac_cv_prog_JAVA'+set}'`\" = set"; then
+>   echo $ac_n "(cached) $ac_c" 1>&6
+> else
+>   if test -n "$JAVA"; then
+>   ac_cv_prog_JAVA="$JAVA" # Let the user override the test.
+> else
+>   IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
+>   ac_dummy="$PATH"
+>   for ac_dir in $ac_dummy; do
+>     test -z "$ac_dir" && ac_dir=.
+>     if test -f $ac_dir/$ac_word; then
+>       ac_cv_prog_JAVA="$ac_prog"
+>       break
+>     fi
+>   done
+>   IFS="$ac_save_ifs"
+> fi
+> fi
+> JAVA="$ac_cv_prog_JAVA"
+> if test -n "$JAVA"; then
+>   echo "$ac_t""$JAVA" 1>&6
+> else
+>   echo "$ac_t""no" 1>&6
+> fi
+> 
+> test -n "$JAVA" && break
+> done
+> 
+> else
+> 	test x$JAVA = x && for ac_prog in kaffe$EXEEXT java$EXEEXT
+> do
+> # Extract the first word of "$ac_prog", so it can be a program name with args.
+> set dummy $ac_prog; ac_word=$2
+> echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
+> echo "configure:1743: checking for $ac_word" >&5
+> if eval "test \"`echo '$''{'ac_cv_prog_JAVA'+set}'`\" = set"; then
+>   echo $ac_n "(cached) $ac_c" 1>&6
+> else
+>   if test -n "$JAVA"; then
+>   ac_cv_prog_JAVA="$JAVA" # Let the user override the test.
+> else
+>   IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
+>   ac_dummy="$PATH"
+>   for ac_dir in $ac_dummy; do
+>     test -z "$ac_dir" && ac_dir=.
+>     if test -f $ac_dir/$ac_word; then
+>       ac_cv_prog_JAVA="$ac_prog"
+>       break
+>     fi
+>   done
+>   IFS="$ac_save_ifs"
+1918c1760,1765
+< rm -f conftest*
+---
+> fi
+> JAVA="$ac_cv_prog_JAVA"
+> if test -n "$JAVA"; then
+>   echo "$ac_t""$JAVA" 1>&6
+> else
+>   echo "$ac_t""no" 1>&6
+1921,1925c1768,1770
+< echo "$ac_t""$ac_cv_c_const" 1>&6
+< if test $ac_cv_c_const = no; then
+<   cat >> confdefs.h <<\EOF
+< #define const 
+< EOF
+---
+> test -n "$JAVA" && break
+> done
+> test -n "$JAVA" || JAVA="$JAVAPREFIX"
+1927a1773
+> test x$JAVA = x && { echo "configure: error: no acceptable Java virtual machine found in \$PATH" 1>&2; exit 1; }
+1929,1931c1775,1779
+<   echo $ac_n "checking for inline""... $ac_c" 1>&6
+< echo "configure:1931: checking for inline" >&5
+< if eval "test \"`echo '$''{'ac_cv_c_inline'+set}'`\" = set"; then
+---
+> # Extract the first word of "uudecode$EXEEXT", so it can be a program name with args.
+> set dummy uudecode$EXEEXT; ac_word=$2
+> echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
+> echo "configure:1779: checking for $ac_word" >&5
+> if eval "test \"`echo '$''{'ac_cv_prog_uudecode'+set}'`\" = set"; then
+1934,1946c1782,1783
+<   ac_cv_c_inline=no
+< for ac_kw in inline __inline__ __inline; do
+<   cat > conftest.$ac_ext <<EOF
+< #line 1938 "configure"
+< #include "confdefs.h"
+< 
+< int main() {
+< } $ac_kw foo() {
+< ; return 0; }
+< EOF
+< if { (eval echo configure:1945: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+<   rm -rf conftest*
+<   ac_cv_c_inline=$ac_kw; break
+---
+>   if test -n "$uudecode"; then
+>   ac_cv_prog_uudecode="$uudecode" # Let the user override the test.
+1948,1949c1785,1794
+<   echo "configure: failed program was:" >&5
+<   cat conftest.$ac_ext >&5
+---
+>   IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
+>   ac_dummy="$PATH"
+>   for ac_dir in $ac_dummy; do
+>     test -z "$ac_dir" && ac_dir=.
+>     if test -f $ac_dir/$ac_word; then
+>       ac_cv_prog_uudecode="yes"
+>       break
+>     fi
+>   done
+>   IFS="$ac_save_ifs"
+1951,1953c1796,1801
+< rm -f conftest*
+< done
+< 
+---
+> fi
+> uudecode="$ac_cv_prog_uudecode"
+> if test -n "$uudecode"; then
+>   echo "$ac_t""$uudecode" 1>&6
+> else
+>   echo "$ac_t""no" 1>&6
+1956,1971c1804,1807
+< echo "$ac_t""$ac_cv_c_inline" 1>&6
+< case "$ac_cv_c_inline" in
+<   inline | yes) ;;
+<   no) cat >> confdefs.h <<\EOF
+< #define inline 
+< EOF
+<  ;;
+<   *)  cat >> confdefs.h <<EOF
+< #define inline $ac_cv_c_inline
+< EOF
+<  ;;
+< esac
+< 
+<   echo $ac_n "checking whether byte ordering is bigendian""... $ac_c" 1>&6
+< echo "configure:1971: checking whether byte ordering is bigendian" >&5
+< if eval "test \"`echo '$''{'ac_cv_c_bigendian'+set}'`\" = set"; then
+---
+> if test x$uudecode = xyes; then
+> echo $ac_n "checking if uudecode can decode base 64 file""... $ac_c" 1>&6
+> echo "configure:1807: checking if uudecode can decode base 64 file" >&5
+> if eval "test \"`echo '$''{'ac_cv_prog_uudecode_base64'+set}'`\" = set"; then
+1974,2001c1810,1820
+<   ac_cv_c_bigendian=unknown
+< # See if sys/param.h defines the BYTE_ORDER macro.
+< cat > conftest.$ac_ext <<EOF
+< #line 1978 "configure"
+< #include "confdefs.h"
+< #include <sys/types.h>
+< #include <sys/param.h>
+< int main() {
+< 
+< #if !BYTE_ORDER || !BIG_ENDIAN || !LITTLE_ENDIAN
+<  bogus endian macros
+< #endif
+< ; return 0; }
+< EOF
+< if { (eval echo configure:1989: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+<   rm -rf conftest*
+<   # It does; now see whether it defined to BIG_ENDIAN or not.
+< cat > conftest.$ac_ext <<EOF
+< #line 1993 "configure"
+< #include "confdefs.h"
+< #include <sys/types.h>
+< #include <sys/param.h>
+< int main() {
+< 
+< #if BYTE_ORDER != BIG_ENDIAN
+<  not big endian
+< #endif
+< ; return 0; }
+---
+>   
+> cat << \EOF > Test.uue
+> begin-base64 644 Test.class
+> yv66vgADAC0AFQcAAgEABFRlc3QHAAQBABBqYXZhL2xhbmcvT2JqZWN0AQAE
+> bWFpbgEAFihbTGphdmEvbGFuZy9TdHJpbmc7KVYBAARDb2RlAQAPTGluZU51
+> bWJlclRhYmxlDAAKAAsBAARleGl0AQAEKEkpVgoADQAJBwAOAQAQamF2YS9s
+> YW5nL1N5c3RlbQEABjxpbml0PgEAAygpVgwADwAQCgADABEBAApTb3VyY2VG
+> aWxlAQAJVGVzdC5qYXZhACEAAQADAAAAAAACAAkABQAGAAEABwAAACEAAQAB
+> AAAABQO4AAyxAAAAAQAIAAAACgACAAAACgAEAAsAAQAPABAAAQAHAAAAIQAB
+> AAEAAAAFKrcAErEAAAABAAgAAAAKAAIAAAAEAAQABAABABMAAAACABQ=
+> ====
+2003,2005c1822,1823
+< if { (eval echo configure:2004: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+<   rm -rf conftest*
+<   ac_cv_c_bigendian=yes
+---
+> if uudecode$EXEEXT Test.uue; then
+> 	ac_cv_prog_uudecode_base64=yes
+2007,2010c1825,1828
+<   echo "configure: failed program was:" >&5
+<   cat conftest.$ac_ext >&5
+<   rm -rf conftest*
+<   ac_cv_c_bigendian=no
+---
+> 	echo "configure: 1826: uudecode had trouble decoding base 64 file 'Test.uue'" >&5
+> 	echo "configure: failed file was:" >&5
+> 	cat Test.uue >&5
+> 	ac_cv_prog_uudecode_base64=no
+2012,2015c1830
+< rm -f conftest*
+< else
+<   echo "configure: failed program was:" >&5
+<   cat conftest.$ac_ext >&5
+---
+> rm -f Test.uue
+2017,2020c1832,1851
+< rm -f conftest*
+< if test $ac_cv_c_bigendian = unknown; then
+< if test "$cross_compiling" = yes; then
+<     { echo "configure: error: can not run test program while cross compiling" 1>&2; exit 1; }
+---
+> 
+> echo "$ac_t""$ac_cv_prog_uudecode_base64" 1>&6
+> fi
+> if test x$ac_cv_prog_uudecode_base64 != xyes; then
+> 	rm -f Test.class
+> 	echo "configure: warning: I have to compile Test.class from scratch" 1>&2
+> 	if test x$ac_cv_prog_javac_works = xno; then
+> 		{ echo "configure: error: Cannot compile java source. $JAVAC does not work properly" 1>&2; exit 1; }
+> 	fi
+> 	if test x$ac_cv_prog_javac_works = x; then
+> 		
+> if test "x$JAVAPREFIX" = x; then
+> 	test "x$JAVAC" = x && for ac_prog in "gcj$EXEEXT -C" guavac$EXEEXT jikes$EXEEXT javac$EXEEXT
+> do
+> # Extract the first word of "$ac_prog", so it can be a program name with args.
+> set dummy $ac_prog; ac_word=$2
+> echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
+> echo "configure:1850: checking for $ac_word" >&5
+> if eval "test \"`echo '$''{'ac_cv_prog_JAVAC'+set}'`\" = set"; then
+>   echo $ac_n "(cached) $ac_c" 1>&6
+2022,2038c1853,1854
+<   cat > conftest.$ac_ext <<EOF
+< #line 2024 "configure"
+< #include "confdefs.h"
+< main () {
+<   /* Are we little or big endian?  From Harbison&Steele.  */
+<   union
+<   {
+<     long l;
+<     char c[sizeof (long)];
+<   } u;
+<   u.l = 1;
+<   exit (u.c[sizeof (long) - 1] == 1);
+< }
+< EOF
+< if { (eval echo configure:2037: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+< then
+<   ac_cv_c_bigendian=no
+---
+>   if test -n "$JAVAC"; then
+>   ac_cv_prog_JAVAC="$JAVAC" # Let the user override the test.
+2040,2043c1856,1865
+<   echo "configure: failed program was:" >&5
+<   cat conftest.$ac_ext >&5
+<   rm -fr conftest*
+<   ac_cv_c_bigendian=yes
+---
+>   IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
+>   ac_dummy="$PATH"
+>   for ac_dir in $ac_dummy; do
+>     test -z "$ac_dir" && ac_dir=.
+>     if test -f $ac_dir/$ac_word; then
+>       ac_cv_prog_JAVAC="$ac_prog"
+>       break
+>     fi
+>   done
+>   IFS="$ac_save_ifs"
+2045c1867,1872
+< rm -fr conftest*
+---
+> fi
+> JAVAC="$ac_cv_prog_JAVAC"
+> if test -n "$JAVAC"; then
+>   echo "$ac_t""$JAVAC" 1>&6
+> else
+>   echo "$ac_t""no" 1>&6
+2047a1875,1901
+> test -n "$JAVAC" && break
+> done
+> 
+> else
+> 	test "x$JAVAC" = x && for ac_prog in "gcj$EXEEXT -C" guavac$EXEEXT jikes$EXEEXT javac$EXEEXT
+> do
+> # Extract the first word of "$ac_prog", so it can be a program name with args.
+> set dummy $ac_prog; ac_word=$2
+> echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
+> echo "configure:1885: checking for $ac_word" >&5
+> if eval "test \"`echo '$''{'ac_cv_prog_JAVAC'+set}'`\" = set"; then
+>   echo $ac_n "(cached) $ac_c" 1>&6
+> else
+>   if test -n "$JAVAC"; then
+>   ac_cv_prog_JAVAC="$JAVAC" # Let the user override the test.
+> else
+>   IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
+>   ac_dummy="$PATH"
+>   for ac_dir in $ac_dummy; do
+>     test -z "$ac_dir" && ac_dir=.
+>     if test -f $ac_dir/$ac_word; then
+>       ac_cv_prog_JAVAC="$ac_prog"
+>       break
+>     fi
+>   done
+>   IFS="$ac_save_ifs"
+> fi
+2048a1903,1907
+> JAVAC="$ac_cv_prog_JAVAC"
+> if test -n "$JAVAC"; then
+>   echo "$ac_t""$JAVAC" 1>&6
+> else
+>   echo "$ac_t""no" 1>&6
+2051,2055c1910,1912
+< echo "$ac_t""$ac_cv_c_bigendian" 1>&6
+< if test $ac_cv_c_bigendian = yes; then
+<   cat >> confdefs.h <<\EOF
+< #define WORDS_BIGENDIAN 1
+< EOF
+---
+> test -n "$JAVAC" && break
+> done
+> test -n "$JAVAC" || JAVAC="$JAVAPREFIX"
+2057a1915
+> test "x$JAVAC" = x && { echo "configure: error: no acceptable Java compiler found in \$PATH" 1>&2; exit 1; }
+2059,2061c1917,1919
+<   echo $ac_n "checking size of long""... $ac_c" 1>&6
+< echo "configure:2061: checking size of long" >&5
+< if eval "test \"`echo '$''{'ac_cv_sizeof_long'+set}'`\" = set"; then
+---
+> echo $ac_n "checking if $JAVAC works""... $ac_c" 1>&6
+> echo "configure:1919: checking if $JAVAC works" >&5
+> if eval "test \"`echo '$''{'ac_cv_prog_javac_works'+set}'`\" = set"; then
+2064,2076c1922,1927
+<   if test "$cross_compiling" = yes; then
+<     { echo "configure: error: can not run test program while cross compiling" 1>&2; exit 1; }
+< else
+<   cat > conftest.$ac_ext <<EOF
+< #line 2069 "configure"
+< #include "confdefs.h"
+< #include <stdio.h>
+< main()
+< {
+<   FILE *f=fopen("conftestval", "w");
+<   if (!f) exit(1);
+<   fprintf(f, "%d\n", sizeof(long));
+<   exit(0);
+---
+>   
+> JAVA_TEST=Test.java
+> CLASS_TEST=Test.class
+> cat << \EOF > $JAVA_TEST
+> /* #line 1927 "configure" */
+> public class Test {
+2079,2081c1930,1931
+< if { (eval echo configure:2080: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+< then
+<   ac_cv_sizeof_long=`cat conftestval`
+---
+> if { ac_try='$JAVAC $JAVACFLAGS $JAVA_TEST'; { (eval echo configure:1931: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } >/dev/null 2>&1; then
+>   ac_cv_prog_javac_works=yes
+2082a1933
+>   { echo "configure: error: The Java compiler $JAVAC failed (see config.log, check the CLASSPATH?)" 1>&2; exit 1; }
+2084,2088c1935
+<   cat conftest.$ac_ext >&5
+<   rm -fr conftest*
+<   ac_cv_sizeof_long=0
+< fi
+< rm -fr conftest*
+---
+>   cat $JAVA_TEST >&5
+2089a1937
+> rm -f $JAVA_TEST $CLASS_TEST
+2092,2095d1939
+< echo "$ac_t""$ac_cv_sizeof_long" 1>&6
+< cat >> confdefs.h <<EOF
+< #define SIZEOF_LONG $ac_cv_sizeof_long
+< EOF
+2096a1941
+> echo "$ac_t""$ac_cv_prog_javac_works" 1>&6
+2098,2100c1943,1948
+<   echo $ac_n "checking size of int""... $ac_c" 1>&6
+< echo "configure:2100: checking size of int" >&5
+< if eval "test \"`echo '$''{'ac_cv_sizeof_int'+set}'`\" = set"; then
+---
+> 
+> 	fi
+> fi
+> echo $ac_n "checking if $JAVA works""... $ac_c" 1>&6
+> echo "configure:1948: checking if $JAVA works" >&5
+> if eval "test \"`echo '$''{'ac_cv_prog_java_works'+set}'`\" = set"; then
+2103,2116c1951,1960
+<   if test "$cross_compiling" = yes; then
+<     { echo "configure: error: can not run test program while cross compiling" 1>&2; exit 1; }
+< else
+<   cat > conftest.$ac_ext <<EOF
+< #line 2108 "configure"
+< #include "confdefs.h"
+< #include <stdio.h>
+< main()
+< {
+<   FILE *f=fopen("conftestval", "w");
+<   if (!f) exit(1);
+<   fprintf(f, "%d\n", sizeof(int));
+<   exit(0);
+< }
+---
+>   
+> JAVA_TEST=Test.java
+> CLASS_TEST=Test.class
+> TEST=Test
+> cat << \EOF > $JAVA_TEST
+> /* [#]line 1957 "configure" */
+> public class Test {
+> public static void main (String args[]) {
+> 	System.exit (0);
+> } }
+2118,2120c1962,1972
+< if { (eval echo configure:2119: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+< then
+<   ac_cv_sizeof_int=`cat conftestval`
+---
+> if test x$ac_cv_prog_uudecode_base64 != xyes; then
+> 	if { ac_try='$JAVAC $JAVACFLAGS $JAVA_TEST'; { (eval echo configure:1964: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } && test -s $CLASS_TEST; then
+> 		:
+> 	else
+> 	  echo "configure: failed program was:" >&5
+> 	  cat $JAVA_TEST >&5
+> 	  { echo "configure: error: The Java compiler $JAVAC failed (see config.log, check the CLASSPATH?)" 1>&2; exit 1; }
+> 	fi
+> fi
+> if { ac_try='$JAVA $JAVAFLAGS $TEST'; { (eval echo configure:1972: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } >/dev/null 2>&1; then
+>   ac_cv_prog_java_works=yes
+2123,2127c1975,1976
+<   cat conftest.$ac_ext >&5
+<   rm -fr conftest*
+<   ac_cv_sizeof_int=0
+< fi
+< rm -fr conftest*
+---
+>   cat $JAVA_TEST >&5
+>   { echo "configure: error: The Java VM $JAVA failed (see config.log, check the CLASSPATH?)" 1>&2; exit 1; }
+2128a1978
+> rm -fr $JAVA_TEST $CLASS_TEST Test.uue
+2131,2134d1980
+< echo "$ac_t""$ac_cv_sizeof_int" 1>&6
+< cat >> confdefs.h <<EOF
+< #define SIZEOF_INT $ac_cv_sizeof_int
+< EOF
+2135a1982
+> echo "$ac_t""$ac_cv_prog_java_works" 1>&6
+2137,2142c1984,1990
+<   for ac_hdr in unistd.h
+< do
+< ac_safe=`echo "$ac_hdr" | sed 'y%./+-%__p_%'`
+< echo $ac_n "checking for $ac_hdr""... $ac_c" 1>&6
+< echo "configure:2142: checking for $ac_hdr" >&5
+< if eval "test \"`echo '$''{'ac_cv_header_$ac_safe'+set}'`\" = set"; then
+---
+> 
+> 
+>             # Extract the first word of "javah", so it can be a program name with args.
+> set dummy javah; ac_word=$2
+> echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
+> echo "configure:1990: checking for $ac_word" >&5
+> if eval "test \"`echo '$''{'ac_cv_path_JAVAH'+set}'`\" = set"; then
+2145,2163c1993,2012
+<   cat > conftest.$ac_ext <<EOF
+< #line 2147 "configure"
+< #include "confdefs.h"
+< #include <$ac_hdr>
+< EOF
+< ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
+< { (eval echo configure:2152: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+< ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
+< if test -z "$ac_err"; then
+<   rm -rf conftest*
+<   eval "ac_cv_header_$ac_safe=yes"
+< else
+<   echo "$ac_err" >&5
+<   echo "configure: failed program was:" >&5
+<   cat conftest.$ac_ext >&5
+<   rm -rf conftest*
+<   eval "ac_cv_header_$ac_safe=no"
+< fi
+< rm -f conftest*
+---
+>   case "$JAVAH" in
+>   /*)
+>   ac_cv_path_JAVAH="$JAVAH" # Let the user override the test with a path.
+>   ;;
+>   ?:/*)			 
+>   ac_cv_path_JAVAH="$JAVAH" # Let the user override the test with a dos path.
+>   ;;
+>   *)
+>   IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
+>   ac_dummy="$PATH"
+>   for ac_dir in $ac_dummy; do 
+>     test -z "$ac_dir" && ac_dir=.
+>     if test -f $ac_dir/$ac_word; then
+>       ac_cv_path_JAVAH="$ac_dir/$ac_word"
+>       break
+>     fi
+>   done
+>   IFS="$ac_save_ifs"
+>   ;;
+> esac
+2165,2171c2014,2016
+< if eval "test \"`echo '$ac_cv_header_'$ac_safe`\" = yes"; then
+<   echo "$ac_t""yes" 1>&6
+<     ac_tr_hdr=HAVE_`echo $ac_hdr | sed 'y%abcdefghijklmnopqrstuvwxyz./-%ABCDEFGHIJKLMNOPQRSTUVWXYZ___%'`
+<   cat >> confdefs.h <<EOF
+< #define $ac_tr_hdr 1
+< EOF
+<  
+---
+> JAVAH="$ac_cv_path_JAVAH"
+> if test -n "$JAVAH"; then
+>   echo "$ac_t""$JAVAH" 1>&6
+2175d2019
+< done
+2177,2182c2021,2025
+<   for ac_hdr in sys/stat.h
+< do
+< ac_safe=`echo "$ac_hdr" | sed 'y%./+-%__p_%'`
+< echo $ac_n "checking for $ac_hdr""... $ac_c" 1>&6
+< echo "configure:2182: checking for $ac_hdr" >&5
+< if eval "test \"`echo '$''{'ac_cv_header_$ac_safe'+set}'`\" = set"; then
+---
+>     # Extract the first word of "javadoc", so it can be a program name with args.
+> set dummy javadoc; ac_word=$2
+> echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
+> echo "configure:2025: checking for $ac_word" >&5
+> if eval "test \"`echo '$''{'ac_cv_path_JAVADOC'+set}'`\" = set"; then
+2185,2203c2028,2047
+<   cat > conftest.$ac_ext <<EOF
+< #line 2187 "configure"
+< #include "confdefs.h"
+< #include <$ac_hdr>
+< EOF
+< ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
+< { (eval echo configure:2192: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+< ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
+< if test -z "$ac_err"; then
+<   rm -rf conftest*
+<   eval "ac_cv_header_$ac_safe=yes"
+< else
+<   echo "$ac_err" >&5
+<   echo "configure: failed program was:" >&5
+<   cat conftest.$ac_ext >&5
+<   rm -rf conftest*
+<   eval "ac_cv_header_$ac_safe=no"
+< fi
+< rm -f conftest*
+---
+>   case "$JAVADOC" in
+>   /*)
+>   ac_cv_path_JAVADOC="$JAVADOC" # Let the user override the test with a path.
+>   ;;
+>   ?:/*)			 
+>   ac_cv_path_JAVADOC="$JAVADOC" # Let the user override the test with a dos path.
+>   ;;
+>   *)
+>   IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
+>   ac_dummy="$PATH"
+>   for ac_dir in $ac_dummy; do 
+>     test -z "$ac_dir" && ac_dir=.
+>     if test -f $ac_dir/$ac_word; then
+>       ac_cv_path_JAVADOC="$ac_dir/$ac_word"
+>       break
+>     fi
+>   done
+>   IFS="$ac_save_ifs"
+>   ;;
+> esac
+2205,2211c2049,2051
+< if eval "test \"`echo '$ac_cv_header_'$ac_safe`\" = yes"; then
+<   echo "$ac_t""yes" 1>&6
+<     ac_tr_hdr=HAVE_`echo $ac_hdr | sed 'y%abcdefghijklmnopqrstuvwxyz./-%ABCDEFGHIJKLMNOPQRSTUVWXYZ___%'`
+<   cat >> confdefs.h <<EOF
+< #define $ac_tr_hdr 1
+< EOF
+<  
+---
+> JAVADOC="$ac_cv_path_JAVADOC"
+> if test -n "$JAVADOC"; then
+>   echo "$ac_t""$JAVADOC" 1>&6
+2215,2222d2054
+< done
+< 
+< 
+<     echo $ac_n "checking if compiler supports long long integer types""... $ac_c" 1>&6
+< echo "configure:2220: checking if compiler supports long long integer types" >&5
+<   cat > conftest.$ac_ext <<EOF
+< #line 2222 "configure"
+< #include "confdefs.h"
+2224,2230c2056,2061
+< int main() {
+<  long long a; 
+< ; return 0; }
+< EOF
+< if { (eval echo configure:2229: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+<   rm -rf conftest*
+<   cf_longlong=yes
+---
+>     # Extract the first word of "jar", so it can be a program name with args.
+> set dummy jar; ac_word=$2
+> echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
+> echo "configure:2060: checking for $ac_word" >&5
+> if eval "test \"`echo '$''{'ac_cv_path_JAR'+set}'`\" = set"; then
+>   echo $ac_n "(cached) $ac_c" 1>&6
+2232,2235c2063,2088
+<   echo "configure: failed program was:" >&5
+<   cat conftest.$ac_ext >&5
+<   rm -rf conftest*
+<   cf_longlong=no
+---
+>   case "$JAR" in
+>   /*)
+>   ac_cv_path_JAR="$JAR" # Let the user override the test with a path.
+>   ;;
+>   ?:/*)			 
+>   ac_cv_path_JAR="$JAR" # Let the user override the test with a dos path.
+>   ;;
+>   *)
+>   IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
+>   ac_dummy="$PATH"
+>   for ac_dir in $ac_dummy; do 
+>     test -z "$ac_dir" && ac_dir=.
+>     if test -f $ac_dir/$ac_word; then
+>       ac_cv_path_JAR="$ac_dir/$ac_word"
+>       break
+>     fi
+>   done
+>   IFS="$ac_save_ifs"
+>   ;;
+> esac
+> fi
+> JAR="$ac_cv_path_JAR"
+> if test -n "$JAR"; then
+>   echo "$ac_t""$JAR" 1>&6
+> else
+>   echo "$ac_t""no" 1>&6
+2237,2246d2089
+< rm -f conftest*
+<   echo "$ac_t""$cf_longlong" 1>&6
+<   test $cf_longlong = yes && cat >> confdefs.h <<\EOF
+< #define HAVE_INT64 1
+< EOF
+< 
+<   test $cf_longlong = yes && cat >> confdefs.h <<\EOF
+< #define HAVE_LONG_LONG 1
+< EOF
+< 
+2248,2254c2091,2092
+<   if test $GCC = yes; then 
+<     CFLAGS="-g -O4 -Wall -Winline -finline-functions -fomit-frame-pointer"
+<     case "$target" in
+<       # At one point, -m486 -malign-double showed better performance, but
+<       # now it doesn't appear to be so
+<       i?86-*) CFLAGS="$CFLAGS";;
+<     esac
+---
+>   else
+>     enable_java=no
+2255a2094
+>   ENABLE_JAVA="$enable_java"
+2268a2108,2109
+>   # more hardcoding...
+>   SLIBJNI_CMD="\$(CC) -shared -L../lib -lpoker -o \$@ \$^"
+2286a2128,2130
+> 
+> 
+> 
+2435a2280
+> s%@CPP@%$CPP%g
+2443d2287
+< s%@CPP@%$CPP%g
+2454a2299,2300
+> s%@SLIBJNI_CMD@%$SLIBJNI_CMD%g
+> s%@ENABLE_JAVA@%$ENABLE_JAVA%g
+Index: configure.in
+===================================================================
+RCS file: /cvsroot/pokersource/poker-eval/configure.in,v
+retrieving revision 1.13
+diff -r1.13 configure.in
+22c22,23
+<   SLIB_CMD="?????? need command to create DLL here"
+---
+>   SLIB_CMD="LINK /DLL /OUT:\$@ \$**"
+>   SLIBJNI_CMD="LINK /DLL /OUT:\$@ ..\\lib\\libpoker.dll \$**"
+33,42d33
+<   dnl Check for java support.
+<   AC_CHECK_CLASSPATH
+<   AC_PROG_JAVAC
+<   AC_PROG_JAVA
+<   AC_CHECK_RQRD_CLASS(org.apache.oro.text.regex.Pattern)
+<   AC_CHECK_RQRD_CLASS(junit.framework.TestCase)
+<   AC_PATH_PROG(JAVAH,javah)
+<   AC_PATH_PROG(JAVADOC,javadoc)
+<   AC_PATH_PROG(JAR,jar)
+< 
+73a65,80
+>   test -z "$enable_java" && enable_java=yes
+>   if test "$enable_java" = "yes" ; then
+>     dnl Check for java support.
+>     AC_CHECK_CLASSPATH
+>     AC_PROG_JAVAC
+>     AC_PROG_JAVA
+>     dnl AC_CHECK_RQRD_CLASS(org.apache.oro.text.regex.Pattern)
+>     dnl AC_CHECK_RQRD_CLASS(junit.framework.TestCase)
+>     AC_PATH_PROG(JAVAH,javah)
+>     AC_PATH_PROG(JAVADOC,javadoc)
+>     AC_PATH_PROG(JAR,jar)
+>   else
+>     enable_java=no
+>   fi
+>   ENABLE_JAVA="$enable_java"
+> 
+85a93,94
+>   # more hardcoding...
+>   SLIBJNI_CMD="\$(CC) -shared -L../lib -lpoker -o \$@ \$^"
+102a112,114
+> AC_SUBST(SLIBJNI_CMD)
+> 
+> AC_SUBST(ENABLE_JAVA)
+Index: examples/Makefile.dos
+===================================================================
+RCS file: /cvsroot/pokersource/poker-eval/examples/Makefile.dos,v
+retrieving revision 1.1
+diff -r1.1 Makefile.dos
+15c15
+< 	hcmp2.exe hcmpn.exe
+---
+> 	hcmp2.exe hcmpn.exe usedecks.exe pokenum.exe
+36a37,42
+> usedecks.exe: usedecks.obj $(LIBPOKER)
+> 	$(CC_EXE)
+> 
+> pokenum.exe: pokenum.obj $(LIBPOKER)
+> 	$(CC_EXE)
+> 
+42a49
+> Makefile: Makefile.in
+Index: java/Makefile.in
+===================================================================
+RCS file: /cvsroot/pokersource/poker-eval/java/Makefile.in,v
+retrieving revision 1.8
+diff -r1.8 Makefile.in
+9c9,14
+< SLIB_CMD= @SLIB_CMD@
+---
+> SLIBJNI_CMD= @SLIBJNI_CMD@
+> ifeq ($(JAVAC),jikes)
+>   JAVACOPTS += +E +P
+>   # TODO: improve on this jre best guess, perhaps in autoconf?
+>   CLASSPATH := $(CLASSPATH):$(JDKHOME)/jre/lib/rt.jar
+> endif
+25,26c30,31
+< JNI_OBJS	:= $(JNI_JAVA:.java=Imp.o)
+< JNI_OBJS	+= jniutil.o pokutil.o
+---
+> JNI_OBJS	:= $(JNI_JAVA:.java=Imp@O@)
+> JNI_OBJS	+= jniutil@O@ pokutil@O@
+30c35,48
+< JARFILE		:= pokersource.jar
+---
+> 
+> JARSOURCE	:= $(CLASSFILES)
+> JARSOURCE_QUOTED:= $(patsubst %,'%', $(JARSOURCE))
+> POKERSOURCE_JAR	:= pokersource.jar
+> JUNIT_JAR	:= junit-3.7.jar
+> ORO_JAR		:= jakarta-oro-2.0.6.jar
+> 
+> JAVADOC_DOCTITLE	:= 'PokerSource Java API'
+> JAVADOC_WINDOWTITLE	:= $(JAVADOC_DOCTITLE)
+> JAVADOC_HEADER		:= '<b>PokerSource Java API</b>'
+> JAVADOC_BOTTOM		:= '<a href="http://www.pokersource.org/">PokerSource \
+> 			Home Page</a> - Learn how you can contribute!'
+> JAVADOC_OVERVIEW	:= overview.html
+> JAVADOC_CLASSPATH	:= .:$(JUNIT_JAR):$(ORO_JAR):$(CLASSPATH)
+35c53
+< jarfile: $(JARFILE)
+---
+> jarfile: $(POKERSOURCE_JAR)
+38,39c56,57
+< $(JARFILE): $(CLASSFILES)
+< 	$(JAR) cf $@ $^
+---
+> $(POKERSOURCE_JAR): $(JARSOURCE)
+> 	$(JAR) cf $@ $(JARSOURCE_QUOTED)
+43c61,67
+< 	$(JAVADOC) -d $(JAVADOCDIR) -private -classpath $(CLASSPATH) $(JAVADOC_PKGS)
+---
+> 	$(JAVADOC) -d $(JAVADOCDIR) -use -author -private \
+> 		-doctitle $(JAVADOC_DOCTITLE) \
+> 		-windowtitle $(JAVADOC_WINDOWTITLE) \
+> 		-header $(JAVADOC_HEADER) \
+> 		-bottom $(JAVADOC_BOTTOM) \
+> 		-overview $(JAVADOC_OVERVIEW) \
+> 		-classpath $(JAVADOC_CLASSPATH) $(JAVADOC_PKGS)
+46c70
+< 	$(RM) $(JNI_HEADER) $(JNI_OBJS) $(JNILIB) $(JARFILE)
+---
+> 	$(RM) $(JNI_HEADER) $(JNI_OBJS) $(JNILIB) $(POKERSOURCE_JAR)
+52c76
+< 	$(JAVAC) -classpath $(CLASSPATH) $<
+---
+> 	$(JAVAC) $(JAVACOPTS) -classpath .:$(JUNIT_JAR):$(ORO_JAR):$(CLASSPATH) $<
+60d83
+< # should fix hardcoded SLIB_CMD
+62c85
+< 	$(SLIB_CMD) -L../lib -lpoker
+---
+> 	$(SLIBJNI_CMD)
+66c89,90
+< test: $(CLASSFILES)
+---
+> TEST_CLASSPATH := $(POKERSOURCE_JAR):$(JUNIT_JAR):$(ORO_JAR):$(CLASSPATH)
+> test: $(POKERSOURCE_JAR) $(JNILIB)
+68,69c92
+< 		$(JAVA) -classpath .:$(JARFILE):$$CLASSPATH \
+< 		 org.pokersource.AllTests
+---
+> 	  $(JAVA) -classpath $(TEST_CLASSPATH) org.pokersource.AllTests
+80a104,105
+> 	$(JAVA) org.pokersource.enum.HoldemAbdulGroup 'A8s+'
+> 	$(JAVA) org.pokersource.enum.HoldemAbdulGroup '99+'
+Index: java/org/pokersource/enum/HoldemAbdulGroup.java
+===================================================================
+RCS file: /cvsroot/pokersource/poker-eval/java/org/pokersource/enum/HoldemAbdulGroup.java,v
+retrieving revision 1.3
+diff -r1.3 HoldemAbdulGroup.java
+15c15
+<     abdulian notation:
+---
+>     abdulian notation.  The notation is:
+Index: lib/Makefile.dos
+===================================================================
+RCS file: /cvsroot/pokersource/poker-eval/lib/Makefile.dos,v
+retrieving revision 1.1
+diff -r1.1 Makefile.dos
+2a3
+> SLIBPOKER=libpoker.dll
+7,9c8,10
+< 	stddeck.obj stdrules.obj evx.obj \
+< 	astuddeck.obj astudrules.obj jokerdeck.obj lowball.obj \
+< 	md5c.obj 
+---
+> 	deck.obj deck_std.obj rules_std.obj rules_joker.obj evx.obj \
+> 	deck_astud.obj rules_astud.obj deck_joker.obj lowball.obj \
+> 	md5c.obj enumerate.obj combinations.obj 
+19c20
+< JOKER_TABLES = t_jokercardmasks.c
+---
+> JOKER_TABLES = t_jokercardmasks.c t_jokerstraight.c
+44a46
+> SLIB_CMD = LINK /DLL /OUT:$@ $**
+46c48
+< all:	$(LIBPOKER) $(EVX_HEADERS)
+---
+> all:	$(LIBPOKER) $(SLIBPOKER) $(EVX_HEADERS)
+51a54,56
+> $(SLIBPOKER): $(OBJ)
+> 	$(SLIB_CMD)
+> 
+53c58,59
+< 	$(RM) *.obj core $(OBJ) $(LIBPOKER) $(DERIVED_SOURCES) $(PROGRAMS) 
+---
+> 	$(RM) *.obj core $(OBJ) $(LIBPOKER) $(SLIBPOKER)
+> 	$(RM) $(DERIVED_SOURCES) $(PROGRAMS) 
+73c79
+< ../include/inlines/evx5.h:	evx_gen5.exe
+---
+> ../include/inlines/evx5.h:	evx_gen5.exe evx_preamble.cfrag
+76c82
+< ../include/inlines/evx7.h:	evx_gen7.exe
+---
+> ../include/inlines/evx7.h:	evx_gen7.exe evx_preamble.cfrag
+112a119
+> Makefile: Makefile.in
+Index: tests/Makefile.dos
+===================================================================
+RCS file: /cvsroot/pokersource/poker-eval/tests/Makefile.dos,v
+retrieving revision 1.1
+diff -r1.1 Makefile.dos
+16c16
+< tests: digtest5.exe digtest7.exe
+---
+> tests: digtest5.exe digtest7.exe joktest1.exe enumtest1.exe enumtest2.exe enumtest3.exe
+23a24,35
+> joktest1.exe : joktest1.obj $(LIBPOKER)
+> 	$(CC_EXE)
+> 
+> enumtest1.exe : enumtest1.obj $(LIBPOKER)
+> 	$(CC_EXE)
+> 
+> enumtest2.exe : enumtest2.obj $(LIBPOKER)
+> 	$(CC_EXE)
+> 
+> enumtest3.exe : enumtest3.obj $(LIBPOKER)
+> 	$(CC_EXE)
+> 
+25c37,38
+< 	$(RM) *.obj core digtest5.exe digtest7.exe
+---
+> 	$(RM) *.obj core digtest5.exe digtest7.exe joktest1.exe
+> 	$(RM) enumtest1.exe enumtest2.exe enumtest3.exe
+30a44,61
+> 	@echo -n "enumtest1: enumeration test 1...  "
+> 	@if [ `./enumtest1 6 3 | md5sum - | awk '{print $$1}'` \
+> 		= 425daf38998180d6f261ac6801d589dd ] ; \
+> 		then echo "		Passed"; \
+> 		else echo "		Failed"; \
+> 	fi
+> 	@echo -n "enumtest2: enumeration test 2...  "
+> 	@if [ `./enumtest2 | md5sum - | awk '{print $$1}'` \
+> 		= 1e144704f542b3046c174bcfc3c1f2a2 ] ; \
+> 		then echo "		Passed"; \
+> 		else echo "		Failed"; \
+> 	fi
+> 	@echo -n "enumtest3: enumeration test 3...  "
+> 	@if [ `./enumtest3 | md5sum - | awk '{print $$1}'` \
+> 		= 8eca9e9a0aa0e4ad71acafbc8a93da4a ] ; \
+> 		then echo "		Passed"; \
+> 		else echo "		Failed"; \
+> 	fi
+40a72,78
+> 	@echo -n "joktest1: joker eval...  "
+> 	@if ./joktest1 > /dev/null ; \
+> 		then echo "		Passed"; \
+> 		else echo "		Failed"; \
+> 	fi
+> 
+> Makefile: Makefile.in
