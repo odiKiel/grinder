@@ -2,6 +2,7 @@ package grinder
 
 import java.io.ObjectInputStream;
 import java.io.FileInputStream;
+import scala.collection.mutable.ArrayBuffer
 
 object Eval {
 
@@ -47,15 +48,51 @@ object Eval {
 	 */
 
 
-  //Todo villianHandRanges with probabilities
+  //Todo villianHandRanges with probabilities, boardCards cannot be part of villains hand
   //binary representation of handranges => range1 & range2 = all hands that they have in common
   //169 possible hands
-  def evaluate(heroCards: (Int, Int), villiansHandRanges: Array[List[(Int, Int)]], boardCards: Array[Int], deadCards: Array[Int]): scala.math.BigDecimal = {
+  def evaluate(heroCards: Array[Int], villainsHandRanges: Array[Array[Array[Int]]], boardCards: Array[Int], deadCards: Array[Int] = Array(0)): scala.math.BigDecimal = {
     //calculate handValue of board, 
     //allcards - boardCards - deadCards - heroCards
+    var allCards = ArrayBuffer(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52)
+    allCards --= (heroCards ++ boardCards ++ deadCards)
+
+    val numberOfPlayers = villainsHandRanges.length
     val numberOfRandCards = 5-boardCards.length
     val boardValue = handValue(boardCards)
-    2.8
+
+    //currently using 0 as second card by turn test not so good
+    val allPlusOneBoards = allCards.map((card: Int) => ((card, 0) -> Eval.handValue(Array(card), boardValue)))
+    val finalBoards = if(numberOfRandCards == 2) {
+      allPlusOneBoards.flatMap({case ((turn, zero), board) => {
+        (allCards -= turn).map((card: Int) => ((turn, card) -> Eval.handValue(Array(card), board)))
+      }})//((Int, Int), Int): ((Turn, River), BoardValue)  2652 Boards!
+    } else {allPlusOneBoards}
+    //calculate handvalue for all possible final boards: for 5 cards => each hand needs only two lookups
+    // HashMap with (Int, Int) => boardValue, (Int, Int) turn, river card
+    // thus compare villians hand with turn and river card if one of the cards is included discard board
+
+    //at first against one villain
+    //villainsHandRanges[0].map((hand: (Int, Int)) => allPlusTwoboards.filter((board: ((Int, Int), Int)) => handContains(hand, board._1)).map((board: ((Int, Int), Int)) => handValue(heroCards, board._2).compare(handValue(hand, board._2))))
+
+    var winner: scala.math.BigDecimal = 0.0
+    var playedBoards: scala.math.BigDecimal = 0.0
+    for(hand: Array[Int] <- villainsHandRanges(0);
+        board: ((Int, Int), Int) <- finalBoards.filter((board: ((Int, Int), Int)) => !handContains(hand, board._1))) {
+        val heroHandValue = handValue(heroCards, board._2)
+        val villainHandValue = handValue(hand, board._2)
+        println("turn: "+board._1._1+ "river: "+board._1._2+" hero: "+handCategory(heroHandValue)+" villain: "+handCategory(villainHandValue))
+        if(heroHandValue > villainHandValue) {winner += 1}
+        else if(heroHandValue == villainHandValue) {winner += (1 / numberOfPlayers)}
+        playedBoards += 1
+    }
+    println(playedBoards+" played boards, win percentage: "+winner/playedBoards)
+    winner / playedBoards
+
+  }
+
+  def handContains(hand: Array[Int], turnRiver: (Int, Int)) = {
+    hand(0) == turnRiver._1 || hand(0) == turnRiver._2 || hand(1) == turnRiver._1 || hand(1) == turnRiver._2
   }
 
   def handCategory(handValue: Int): String = {
