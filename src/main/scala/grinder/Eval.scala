@@ -77,11 +77,15 @@ object Eval {
 
     var winner: scala.math.BigDecimal = 0.0
     var playedBoards: scala.math.BigDecimal = 0.0
+
+    //for each hand in handdistribution for each hand in villains handdsitr, ... calculate all boards or some randomized
     for(hand: Array[Int] <- villainsHandRanges(0);
         board: ((Int, Int), Int) <- finalBoards.filter((board: ((Int, Int), Int)) => !handContains(hand, board._1))) {
         val heroHandValue = handValue(heroCards, board._2)
         val villainHandValue = handValue(hand, board._2)
         println("turn: "+board._1._1+ "river: "+board._1._2+" hero: "+handCategory(heroHandValue)+" villain: "+handCategory(villainHandValue))
+
+        //tie can be between 2 of 5 players!
         if(heroHandValue > villainHandValue) {winner += 1}
         else if(heroHandValue == villainHandValue) {winner += (1 / numberOfPlayers)}
         playedBoards += 1
