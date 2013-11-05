@@ -31,13 +31,14 @@ object Grinder {
     tables(tableId).newRound(players)
   }
 
-  def addPlayerAction(tableId: Int, playerName: String, playerAction: PlayerAction, cash: scala.math.BigDecimal) = {
+  def addPlayerAction(tableId: Int, playerName: String, playerAction: PlayerAction, cash: Double) = {
     tables(tableId).addPlayerAction(playerName, playerAction, cash)
     //every player action changes the range that the player represents 
     //always calculate the likelihood of the hands in the handrange of the player
   }
 
   def requestHeroAction(tableId: Int) = {
+    tables(tableId).requestHeroAction()
     //decide if hero checks, calls, bets, raises and how much
   }
 

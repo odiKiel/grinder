@@ -1,29 +1,41 @@
 package grinder
 
-class Pot(players: scala.collection.mutable.ArrayBuffer[Player], var potSize: scala.math.BigDecimal){
+class Pot(var potSize: Double){
+  val players = scala.collection.mutable.ArrayBuffer[Player]()
   //Calculate ranges for players
 
   //actionList Seq[(Player, Action)] action: Check, Bet, Raise, Fold
 
   //Remove a player from the pot
 
-  object Action extends Enumeration {
-    type Action = Value
-    val Fold, Check, Call, Raise = Value
+  import PlayerAction._
+  import TableStatus._
+
+  //returns the number of players that have to act after players action
+  def playersToAct(player: Player): Int = {
+    players.length - players.indexOf(player) - 1
   }
 
-  import Action._
-
-  var players = collection.mutable.ListBuffer[Double]() 
-
-  def removePlayer(player: Player) = {
+  def handRanges(except: Player = null): List[Array[Int]] = {
+    players.filter(_ != except).map(_.handRange).toList
   }
 
-  //Adds an amount to the pot
-  def addAction(action: Action, cash: scala.math.BigDecimal, player: Player, playersToAct: Int) = {
-    player.decreaseStack(cash)
-    this.potSize = this.potSize + cash
-    //calculate new player range add the end of the betting round?
-    //depending on players to act calculate hand strength
+  def removePlayer(playerName: String) = {
+    players.remove(players.indexWhere(_.name == playerName))
+  }
+
+  def addPlayer(player: Player) = {
+    players.append(player)
+  }
+
+  //Adds an amount to the pot and adds the action to the player so he can calculate a new handrange
+  def addAction(playerName: String, playerAction: PlayerAction, cash: Double, tableStatus: TableStatus) = {
+    if(playerAction == Fold) {removePlayer(playerName)}
+    else {
+      val playerIndex = players.indexWhere(_.name == playerName)
+      val player = players(playerIndex)
+      player.addAction(playerAction, cash, this.potSize, players.length - playerIndex - 1, tableStatus)
+      this.potSize = this.potSize + cash
+    }
   }
 }

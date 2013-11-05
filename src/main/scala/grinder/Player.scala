@@ -1,13 +1,25 @@
 package grinder
 
+import TableStatus._
+import PlayerAction._
 //position number 1 is SB position number 10 is Button. It is possible, that a position is empty
-class Player(name: String, var stackSize: scala.math.BigDecimal, position: Int) {
+class Player(val name: String, var stackSize: Double) {
  
-  //var handRange: BeliefVector
+  var handRange: List[Array[Int]] = List(Array(0))
 
   //returns the range that the player represents by his actions
-  def getRange(pot: Pot): String = {
-    "AA"
+
+  var currentHand: Int = 0
+  def getNextHand(): Array[Int] = {
+    val hand = handRange(currentHand)
+    currentHand = (currentHand + 1) % handRange.length
+    hand
+  }
+
+  def addAction(action: PlayerAction, cash: Double, potSize: Double, playersToAct: Int, tableStatus: TableStatus) = {
+    this.stackSize -= cash
+    val betSize = cash / potSize
+    //depending on the action, tableStatus, playersToAct and betSize calculate range
   }
 
   // Returns the minimum amount we have to bet to get the player to lay down his hand
@@ -20,9 +32,6 @@ class Player(name: String, var stackSize: scala.math.BigDecimal, position: Int) 
     33.5
   }
 
-  def decreaseStack(cash: scala.math.BigDecimal) = {
-    this.stackSize = this.stackSize - cash
-  }
   //Handle Pokertracker 4 database queries
   //Define Playing Style
 }
